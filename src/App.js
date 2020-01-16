@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import * as firebase from 'firebase';
+import storageRef from 'firebase';
 import Chart from 'chart.js';
 import {Line} from 'react-chartjs-2';
 import templogo from './components/temperature.png';
@@ -8,13 +9,54 @@ import airlogo from './components/airquality.png';
 import humlogo from './components/humidity.png';
 import wetfloorlogo  from './components/wetfloor.png';
 import toiletfreqlogo  from './components/toiletfreq.png';
+import {db} from './index'
 
+var aa1 = []
 class App extends Component {
   constructor() {
     super();
     this.state = {
-      ipdate: ''
+      ipdate: '',
+      url: '',
+      image: null
     };
+    this.handleChange = this.handleChange.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
+
+  }
+
+  handleChange = e => {
+    if(e.target.files[0]) {
+      const image = e.target.files[0];
+      this.setState(() => ({image}));
+
+    }
+  }
+
+  handleUpload = () => {
+    var storageRef = firebase.storage().ref();
+    const {image} = this.state;
+    // const uploadTask = storageRef.child(`resolve_images/${image.name}`).put(image);
+    const uploadTask = storageRef.child(`resolve_images/${image.name}`).put(image);
+
+    uploadTask.on('state_changed', 
+      (snapshot) => {
+        // progrss function ....
+        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        this.setState({progress});
+      }, 
+      (error) => {
+           // error function ....
+        console.log(error);
+      }, 
+      () => {
+          // complete function ....
+          storageRef.child(`resolve_images/${image.name}`).getDownloadURL().then(url => {
+            console.log(url);
+            this.setState({url: url});
+        })
+      });
+
   }
 
 componentDidMount() {
@@ -217,6 +259,17 @@ componentDidMount() {
     });
   } 
   //end of componentdidmount
+  const db = firebase.firestore()
+  const aaRef = db.collection('aa').get().then((snapshot) => {
+    
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      aa1.push(data);
+    })
+    console.log(aa1)
+  }).catch(error => console.log(error))
+
+
 }
 
   updateDate() {
@@ -520,6 +573,7 @@ componentDidMount() {
   }
 
 
+
   render() {
     const mystyle = {
       height: this.state.waterlevelvalue + '%',
@@ -578,7 +632,33 @@ componentDidMount() {
                 <canvas id="wlevcanvas" hidden/>
               </div> <br></br>
             </div>
+{/* 
+            {aa1.map(aa => <div> {aa['url']} </div>)} 
+            {this.renderItems()} */}
+            <h1 style={{color: "red", textAlign:"left"}}> Submitted Complaints</h1> 
+            <div class="complaint">
+              <tr>
+                <th width="100px">Name</th>
+                <th width="100px">Image</th>
+                <th width="100px">ncncn</th>
+              </tr>
+            </div>
+          {  aa1.map((item, index) => (
+       
+              <div class="complaint">
+               
+                  {/* Passing unique value to 'key' prop, eases process for virtual DOM to remove specific element and update HTML tree  */}
+                  <table>
 
+                  <td width="100px"><span class="comp_name">{item.name}</span></td>
+                  <td width="100px"><span class="comp_img"><img src={item.uri} height="75" width="75" /></span></td>
+                  <td> <input type="file" onChange={this.handleChange} /> </td> 
+                  <td> <button onClick={this.handleUpload}>Upload</button> </td>                 
+                  </table>
+              </div>
+ 
+            ))
+          }
           
       
 
