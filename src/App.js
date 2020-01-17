@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import * as firebase from 'firebase';
 import storageRef from 'firebase';
+
 import Chart from 'chart.js';
 import {Line} from 'react-chartjs-2';
 import templogo from './components/temperature.png';
@@ -9,10 +10,12 @@ import airlogo from './components/airquality.png';
 import humlogo from './components/humidity.png';
 import wetfloorlogo  from './components/wetfloor.png';
 import toiletfreqlogo  from './components/toiletfreq.png';
-import {db} from './index'
 
-var aa1 = []
+
+var aa1 = [];
+var avg;
 class App extends Component {
+
   constructor() {
     super();
     this.state = {
@@ -205,6 +208,7 @@ componentDidMount() {
   const dbrefctdata = firebase.database().ref().child('ctdata');
   // const dbreftdata = firebase.database().ref().child('tdata');
   const dbrefcfreq = firebase.database().ref().child('cfreq');
+  const dbrefcqual = firebase.database().ref().child('cqual');
 
 
 
@@ -214,6 +218,11 @@ componentDidMount() {
     });
 
   });
+
+  // dbrefcqual.on('value', snap => {
+
+
+  // });
 
   dbrefctdata.on('value', snap => { 
       this.setState({
@@ -258,7 +267,7 @@ componentDidMount() {
       cfreqvalue : localStorage.getItem('cfreqvaluecache')
     });
   } 
-  //end of componentdidmount
+ 
   const db = firebase.firestore()
   const aaRef = db.collection('aa').get().then((snapshot) => {
     
@@ -269,12 +278,18 @@ componentDidMount() {
     console.log(aa1)
   }).catch(error => console.log(error))
 
-
+ //end of componentdidmount
 }
 
   updateDate() {
 
     var ipdate = this.input.value;
+    var ipdate1 = new Date(ipdate);
+    var rawdate = ipdate1.getFullYear() + '-' + (ipdate1.getMonth()+1) + '-' + ipdate1.getDate() 
+    ipdate1 = rawdate;
+    ipdate = ipdate1;
+
+    console.log("ip date converted to ingle digti ",ipdate1);
     
     function gotData(data) {
       var mydata = [];
@@ -291,15 +306,9 @@ componentDidMount() {
           tempdata[i] = tdata[i];
       }
 
-      for(var i=0; i<tempdata.length; i++) {          // converting timestamp to date only ctdata
-        var timestamparrindexdate = new Date(tempdata[i]['date']);
-        var rawdate = timestamparrindexdate.getFullYear() + '-' + (timestamparrindexdate.getMonth()+1) + '-' + timestamparrindexdate.getDate() 
-    
-        tempdata[i]['date'] = rawdate;                
-      }
-
       for(var i=0; i<tempdata.length; i++) {             //storing data on date to array mydata
-        if(ipdate == tempdata[i]['date']) {
+        tempdata[i]['date'] = new Date(tempdata[i]['date']);
+        if(ipdate == tempdata[i]['date'].getFullYear() + '-' + (tempdata[i]['date'].getMonth()+1) + '-' + tempdata[i]['date'].getDate()) {
             mydata.push(tempdata[i]);
         }
       }
@@ -486,15 +495,16 @@ componentDidMount() {
           tempdata1[i] = tdata1[i];
       }
       
-      for(var i=0; i<tempdata1.length; i++) {          // converting timestamp to date only tempdata
-        var timestamparrindexdate = new Date(tempdata1[i]['date']);
-        var rawdate = timestamparrindexdate.getFullYear() + '-' + (timestamparrindexdate.getMonth()+1) + '-' + timestamparrindexdate.getDate() 
+      // for(var i=0; i<tempdata1.length; i++) {          // converting timestamp to date only tempdata
+      //   var timestamparrindexdate = new Date(tempdata1[i]['date']);
+      //   var rawdate = timestamparrindexdate.getFullYear() + '-' + (timestamparrindexdate.getMonth()+1) + '-' + timestamparrindexdate.getDate() 
     
-        tempdata1[i]['date'] = rawdate;                
-      }
+      //   tempdata1[i]['date'] = rawdate;                
+      // }
 
-      for(var i=0; i<tempdata1.length; i++) {
-        if(ipdate == tempdata1[i]['date']) {
+      for(var i=0; i<tempdata1.length; i++) {             //storing data on date to array mydata
+        tempdata1[i]['date'] = new Date(tempdata1[i]['date']);
+        if(ipdate == tempdata1[i]['date'].getFullYear() + '-' + (tempdata1[i]['date'].getMonth()+1) + '-' + tempdata1[i]['date'].getDate()) {
             mydata1.push(tempdata1[i]);
         }
       }
@@ -503,6 +513,7 @@ componentDidMount() {
         aalabelvalues.push(mydata1[i]['date']);
         freqvalues.push(mydata1[i]['val']);
       }
+      console.log("Temp data date aa",tempdata1[8]['date']);
       console.log(mydata1);
 
       freqgraph(aalabelvalues, freqvalues);
@@ -546,7 +557,58 @@ componentDidMount() {
       }
       //end of gotdata
     }
+
+    function gotData2(data) {
+      var mydata2 = [];
+      var qualvalues = [];
+      var aalabelvalues = [];
+
+      var tdata2 = snapshotToArray(data);    // converted data to array of aa
+
+      var tempdata2 = [];
+      for(var i=0; i<tdata2.length; i++) {     // store copy of data in tempdata aa
+          tempdata2[i] = tdata2[i];
+      }
+      
+      for(var i=0; i<tempdata2.length; i++) {             //storing data on date to array mydata
+        tempdata2[i]['date'] = new Date(tempdata2[i]['date']);
+        if(ipdate == tempdata2[i]['date'].getFullYear() + '-' + (tempdata2[i]['date'].getMonth()+1) + '-' + tempdata2[i]['date'].getDate()) {
+            mydata2.push(tempdata2[i]);
+        }
+      }
+
+      for(var i=0; i<tempdata2.length; i++) {
+        if(ipdate == tempdata2[i]['date']) {
+            mydata2.push(tempdata2[i]);
+        }
+      }
+
+      for(var i=0; i<mydata2.length; i++) {
+        qualvalues.push(mydata2[i]['quality']);
+        // freqvalues.push(mydata1[i]['val']);
+      }
+
+      var sum=0;
+
+      for(var i=0; i<qualvalues.length; i++) {
+        sum = sum + qualvalues[i];
+      }
+      avg = sum/qualvalues.length;
+      console.log(avg);
+
+      document.getElementById('cquality').innerText = avg;
+
+      // console.log(tempdata2[4]['date']);
+      // console.log(mydata2);
+      // console.log(qualvalues);
+
+      // freqgraph(aalabelvalues, freqvalues);
+
     
+      //end of gotdata
+    }
+    
+
     function snapshotToArray(snapshot) {                                    // the snapshot is in the form id:{date: 'value', val: 'val'}
       var returnArr = [];                                                 // we can't feed the same data to the chart, we convert the 
       let i = 0;                                                          // snapshot into the Array with [{date, val, key}] formate
@@ -568,6 +630,9 @@ componentDidMount() {
 
     var ref1 = firebase.database().ref('aa');
     ref1.on('value', gotData1, errData);
+
+    var ref2 = firebase.database().ref('cqual');
+    ref2.on('value', gotData2, errData);
 
   //end of upatdate
   }
@@ -631,7 +696,15 @@ componentDidMount() {
                 <span >Water Present in Tank : {this.state.waterlevelvalue}% </span>
                 <canvas id="wlevcanvas" hidden/>
               </div> <br></br>
+
+              Cleaner's Quality : 
+            <div class="cquality">
             </div>
+
+            </div>
+
+
+
 {/* 
             {aa1.map(aa => <div> {aa['url']} </div>)} 
             {this.renderItems()} */}
@@ -643,23 +716,25 @@ componentDidMount() {
                 <th width="100px">ncncn</th>
               </tr>
             </div>
-          {  aa1.map((item, index) => (
-       
-              <div class="complaint">
-               
-                  {/* Passing unique value to 'key' prop, eases process for virtual DOM to remove specific element and update HTML tree  */}
-                  <table>
+            
+            {  aa1.map((item, index) => (
+            
+                <div class="complaint">
 
-                  <td width="100px"><span class="comp_name">{item.name}</span></td>
-                  <td width="100px"><span class="comp_img"><img src={item.uri} height="75" width="75" /></span></td>
-                  <td> <input type="file" onChange={this.handleChange} /> </td> 
-                  <td> <button onClick={this.handleUpload}>Upload</button> </td>                 
-                  </table>
-              </div>
- 
-            ))
-          }
-          
+                    {/* Passing unique value to 'key' prop, eases process for virtual DOM to remove specific element and update HTML tree  */}
+                    <table>
+
+                    <td width="100px"><span class="comp_name">{item.name}</span></td>
+                    <td width="100px"><span class="comp_img"><img src={item.uri} height="75" width="75" /></span></td>
+                    <td> <input type="file" onChange={this.handleChange} /> </td> 
+                    <td> <button onClick={this.handleUpload}>Upload</button> </td>                 
+                    </table>
+                </div>
+            
+              ))
+            }
+
+
       
 
 
