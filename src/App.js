@@ -8,11 +8,11 @@ import airlogo from './components/airquality.png';
 import humlogo from './components/humidity.png';
 import wetfloorlogo  from './components/wetfloor.png';
 import toiletfreqlogo  from './components/toiletfreq.png';
-// import { CircularProgressbar } from 'react-circular-progressbar';
+import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import {Progress} from 'antd';
 
-var aa1 = [];
+// var aa1 = [];
 var avg=0;
 var avg1=0;
 
@@ -51,122 +51,6 @@ componentDidMount() {
     }
   });
   }
-
-  function airgraph(labelvalues, airvalues) {
-    //console.log(airvalues);
-    var airgraph = {
-      type: 'line', 
-      data: { 
-        // labels: [1,2,3,4,5,6,7,8,9,0], 
-        labels: labelvalues,
-        datasets: [ 
-          { 
-              label: 'Air Quality', 
-              data: airvalues, 
-              fill: false,
-              borderWidth : 5,
-              backgroundColor: [
-              "black"
-              ]
-          } 
-        ] 
-      }, 
-      options: { 
-            scales: { 
-                yAxes: [{ 
-                    ticks: { 
-                        beginAtZero:true 
-                    } 
-                }],
-                xAxes: [{ 
-                  ticks: { 
-                      display: false 
-                  } 
-              }]  
-            } 
-        } 
-    }
-    var ctx = document.getElementById("aircanvas").getContext("2d");           //Created DOM reference to our tag for chart
-    // $('#datetext').text(ipdate); 
-    window.myLine = new Chart(ctx, airgraph);  
-  }
-
-  function tempgraph(labelvalues, tempvalues) {
-    //console.log(airvalues);
-    var tempgraph = {
-      type: 'line', 
-      data: { 
-        // labels: [1,2,3,4,5,6,7,8,9,0], 
-        labels: labelvalues,
-        datasets: [ 
-          { 
-              label: 'Temperature', 
-              data: tempvalues, 
-              fill: false,
-              borderWidth : 5,
-              backgroundColor: [
-              "black"
-              ]
-          } 
-        ] 
-      }, 
-      options: { 
-            scales: { 
-                yAxes: [{ 
-                    ticks: { 
-                        beginAtZero:true 
-                    } 
-                }],
-                xAxes: [{ 
-                  ticks: { 
-                      display: false 
-                  } 
-              }]  
-            } 
-        } 
-    }
-    var ctx = document.getElementById("tempcanvas").getContext("2d");           //Created DOM reference to our tag for chart
-    window.myLine = new Chart(ctx, tempgraph);  
-  }
-
-  function humgraph(labelvalues, humvalues) {
-    //console.log(airvalues);
-    var humgraph = {
-      type: 'line', 
-      data: { 
-        // labels: [1,2,3,4,5,6,7,8,9,0], 
-        labels: labelvalues,
-        datasets: [ 
-          { 
-              label: 'Humidity', 
-              data: humvalues, 
-              fill: false,
-              borderWidth : 5,
-              backgroundColor: [
-              "black"
-              ]
-          } 
-        ] 
-      }, 
-      options: { 
-            scales: { 
-                yAxes: [{ 
-                    ticks: { 
-                        beginAtZero:true 
-                    } 
-                }],
-                xAxes: [{ 
-                  ticks: { 
-                      display: false 
-                  } 
-              }]  
-            } 
-        } 
-    }
-    var ctx = document.getElementById("humcanvas").getContext("2d");           //Created DOM reference to our tag for chart
-    window.myLine = new Chart(ctx, humgraph);  
-  }
-
 
   const dbrefctdata = firebase.database().ref().child('ctdata');
   // const dbreftdata = firebase.database().ref().child('tdata');
@@ -239,10 +123,11 @@ componentDidMount() {
 
   function prediction(data) {
     var tdata1 = snapshotToArray(data);
-    var airlabel = [];
-    var humlabel = [];
-    var templabel = [];
-    var wlevlabel = [];
+    // var airlabel = [];
+    // var humlabel = [];
+    // var templabel = [];
+    // var wlevlabel = [];
+    var alllabel = [];
     var airvalue = [];
     var humvalue = [];
     var tempvalue = [];
@@ -257,215 +142,97 @@ componentDidMount() {
     for(var i=0 ; i<tempdata1.length; i++) {
         for(var j=0; j<24; j++) {
           if(i==0) {
-            airlabel.push(tempdata1[i][j]['hour']);
+            alllabel.push(tempdata1[i][j]['hour']);
             airvalue.push(tempdata1[i][j]['val']);
           }
           else if(i==1) {
-            humlabel.push(tempdata1[i][j]['hour']);
+            // alllabel.push(tempdata1[i][j]['hour']);
             humvalue.push(tempdata1[i][j]['val']);
           }
           else if(i==2) {
-            templabel.push(tempdata1[i][j]['hour']);
+            // templabel.push(tempdata1[i][j]['hour']);
             tempvalue.push(tempdata1[i][j]['val']);
           }
           else if(i==3) {
-            wlevlabel.push(tempdata1[i][j]['hour']);
+            // wlevlabel.push(tempdata1[i][j]['hour']);
             wlevvalue.push(tempdata1[i][j]['val']);
           }
         
         }
     }
-    airgraph(airlabel, airvalue);
-    humgraph(humlabel, humvalue);
-    tempgraph(templabel, tempvalue);
-    wlevgraph(wlevlabel, wlevvalue);
+    predgraph(alllabel, airvalue, 'airpredcanvas', "Predicted Air Quality");
+    predgraph(alllabel, humvalue, 'humpredcanvas', "Predicted Humidity");
+    predgraph(alllabel, tempvalue, 'temppredcanvas', "Predicted Temperature");
+    predgraph(alllabel, wlevvalue, 'wlevpredcanvas', "Predicted Water Level");
     // console.log(airlabel);
     // console.log(humlabel);
     // console.log(airvalue);
     // console.log(humvalue);
-        
-    function airgraph(airlabel, airvalue) {
+
+    localStorage.setItem('airpredcache',JSON.stringify(airvalue));
+    localStorage.setItem('humpredcache' ,JSON.stringify(humvalue));
+    localStorage.setItem('temppredcache' ,JSON.stringify(tempvalue));
+    localStorage.setItem('wlevpredcache' ,JSON.stringify(wlevvalue));
+    localStorage.setItem('alllabelcache' ,JSON.stringify(alllabel));
+    // console.log(localStorage.getItem('airpredcache'))
+
+      
+    }
+    
+    function predgraph(label, value, canvas, titlelabel) {
       //console.log(airvalues);
       var airgraph = {
         type: 'line', 
         data: { 
           // labels: [1,2,3,4,5,6,7,8,9,0], 
-          labels: airlabel,
+          labels: label,
           datasets: [ 
             { 
-                label: 'Predicted Air Quality', 
-                data: airvalue, 
+                label: titlelabel, 
+                data: value, 
                 fill: false,
                 borderWidth : 2,
                 backgroundColor: [
                 ],
-                pointHoverRadius: 5, //radius of point after hover
-                pointBackgroundColor: 'Lavenderblush', //color of dots
+                pointRadius: 1,
+                pointHoverRadius: 6, //radius of point after hover
+                pointBackgroundColor: 'Blue', //color of dots
                 pointHoverBackgroundColor: '', //back.color of point after hover
                 pointHoverBorderColor: '	#89CFF0',//color of point border after hover
-                borderColor: '',//color of line            
+                borderColor: 'white',//color of line            
              
             } 
           ] 
         }, 
         options: { 
+              legend: {
+                labels: {
+                    fontColor: "white",
+                    fontSize: 14
+                }
+              },
               scales: { 
                   yAxes: [{ 
                       ticks: { 
-                          beginAtZero:true ,
+                          // beginAtZero:true ,
                           fontColor: "	#89CFF0",
-                          color: "red"
+                          // color: "red"
                       } 
                   }],
                   xAxes: [{ 
                     ticks: { 
-                        display: false 
+                        fontColor: "	#89CFF0",
+                        beginAtZero: false,
+                        // display: false 
                     } 
                 }]  
               } 
           } 
       }
-      var ctx = document.getElementById("airpredcanvas").getContext("2d");           //Created DOM reference to our tag for chart
+      var ctx = document.getElementById(canvas).getContext("2d");           //Created DOM reference to our tag for chart
       // $('#datetext').text(ipdate); 
       window.myLine = new Chart(ctx, airgraph);  
-    }
-
-    function tempgraph(templabel, tempvalue) {
-      //console.log(airvalues);
-      var tempgraph = {
-        type: 'line', 
-        data: { 
-          // labels: [1,2,3,4,5,6,7,8,9,0], 
-          labels: templabel,
-          datasets: [ 
-            { 
-                label: 'Predicted Temperature', 
-                data: tempvalue, 
-                fill: false,
-                borderWidth : 2,
-                backgroundColor: [
-                ],
-                pointHoverRadius: 5, //radius of point after hover
-                pointBackgroundColor: 'Lavenderblush', //color of dots
-                pointHoverBackgroundColor: '', //back.color of point after hover
-                pointHoverBorderColor: '	#89CFF0',//color of point border after hover
-                borderColor: '',//color of line            
-             
-            } 
-          ] 
-        }, 
-        options: { 
-              scales: { 
-                yAxes: [{ 
-                  ticks: { 
-                      beginAtZero:true ,
-                      fontColor: "	#89CFF0",
-                      color: "red"
-                  } 
-              }],
-                  xAxes: [{ 
-                    ticks: { 
-                        display: false 
-                    } 
-                }]  
-              } 
-          } 
-      }
-      var ctx = document.getElementById("temppredcanvas").getContext("2d");           //Created DOM reference to our tag for chart
-      window.myLine = new Chart(ctx, tempgraph);  
-    }
-
-    function humgraph(humlabel, humvalue) {
-      //console.log(airvalues);
-      var humgraph = {
-        type: 'line', 
-        data: { 
-          // labels: [1,2,3,4,5,6,7,8,9,0], 
-          labels: humlabel,
-          datasets: [ 
-            { 
-                label: 'Predicted Humidity', 
-                data: humvalue, 
-                fill: false,
-                borderWidth : 2,
-                backgroundColor: [
-                ],
-                pointHoverRadius: 5, //radius of point after hover
-                pointBackgroundColor: 'Lavenderblush', //color of dots
-                pointHoverBackgroundColor: '', //back.color of point after hover
-                pointHoverBorderColor: '	#89CFF0',//color of point border after hover
-                borderColor: '',//color of line            
-             
-            } 
-          ] 
-        }, 
-        options: { 
-              scales: { 
-                yAxes: [{ 
-                  ticks: { 
-                      beginAtZero:true ,
-                      fontColor: "	#89CFF0",
-                      color: "red"
-                  } 
-              }],
-                  xAxes: [{ 
-                    ticks: { 
-                        display: false 
-                    } 
-                }]  
-              } 
-          } 
-      }
-      var ctx = document.getElementById("humpredcanvas").getContext("2d");           //Created DOM reference to our tag for chart
-      window.myLine = new Chart(ctx, humgraph);  
-    }
-
-    function wlevgraph(wlevlabel, wlevvalue) {
-      //console.log(airvalues);
-      var wlevgraph = {
-        type: 'line', 
-        data: { 
-          // labels: [1,2,3,4,5,6,7,8,9,0], 
-          labels: wlevlabel,
-          datasets: [ 
-            { 
-                label: 'Predicted Water in Tank', 
-                data: wlevvalue, 
-                fill: false,
-                borderWidth : 2,
-                backgroundColor: [
-                ],
-                pointHoverRadius: 5, //radius of point after hover
-                pointBackgroundColor: 'Lavenderblush', //color of dots
-                pointHoverBackgroundColor: '', //back.color of point after hover
-                pointHoverBorderColor: '	#89CFF0',//color of point border after hover
-                borderColor: '',//color of line            
-             
-            } 
-          ] 
-        }, 
-        options: { 
-              scales: { 
-                yAxes: [{ 
-                  ticks: { 
-                      beginAtZero:true ,
-                      fontColor: "	#89CFF0",
-                      color: "red"
-                  } 
-              }],
-                  xAxes: [{ 
-                    ticks: { 
-                        display: false 
-                    } 
-                }]  
-              } 
-          } 
-      }
-      var ctx = document.getElementById("wlevpredcanvas").getContext("2d");           //Created DOM reference to our tag for chart
-      window.myLine = new Chart(ctx, wlevgraph);  
-    }
-
-  }
+    }  
 
   if (!navigator.onLine) {
     this.setState({
@@ -478,6 +245,12 @@ componentDidMount() {
       datevalue : localStorage.getItem('datevaluecache'),
       cfreqvalue : localStorage.getItem('cfreqvaluecache')
     });
+    // var alllabel = JSON.parse(localStorage.getItem("alllabelcache"));
+    // var airvalue = JSON.parse(localStorage.getItem("airpredcache"))
+    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("airpredcache")), 'airpredcanvas')
+    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("humpredcache")), 'humpredcanvas')
+    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("temppredcache")), 'temppredcanvas')
+    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("wlevpredcache")), 'wlevpredcanvas')
   } 
  
   function snapshotToArray(snapshot) {                                    // the snapshot is in the form id:{date: 'value', val: 'val'}
@@ -504,7 +277,8 @@ componentDidMount() {
     ipdate = rawdate;
     // ipdate = ipdate1;
 
-    console.log("ip date converted to ingle digti ",ipdate1);
+    console.log("ip date converted to ingle digti ",ipdate);
+
     
     function gotData(data) {
       var mydata = [];
@@ -513,21 +287,12 @@ componentDidMount() {
       var humvalues = [];
       var wlevvalues = [];
       var labelvalues = [];
+      // var tempdata = [];
 
       var tdata = snapshotToArray(data);    // converted data to array of tdata
      
-      var tempdata = [];
-      for(var i=0; i<tdata.length; i++) {     // store copy of data in tempdata tdata
-          tempdata[i] = tdata[i];
-      }
-
-      for(var i=0; i<tempdata.length; i++) {             //storing data on date to array mydata
-        tempdata[i]['date'] = new Date(tempdata[i]['date']);
-        if(ipdate == tempdata[i]['date'].getFullYear() + '-' + (tempdata[i]['date'].getMonth()+1) + '-' + tempdata[i]['date'].getDate()) {
-            mydata.push(tempdata[i]);
-        }
-      }
-      console.log(mydata);
+      mydata = mydatafunc(tdata, mydata);
+      // console.log(mydata);
 
       for(var i=0; i<mydata.length; i++) {
         airvalues.push(mydata[i]['air']);
@@ -537,274 +302,32 @@ componentDidMount() {
         labelvalues.push(mydata[i]['date'])
       }
 
-      airgraph(labelvalues, airvalues);
-      tempgraph(labelvalues, tempvalues);
-      humgraph(labelvalues, humvalues);
-      wlevgraph(labelvalues, wlevvalues);
-    
-      function airgraph(labelvalues, airvalues) {
-        //console.log(airvalues);
-        var airgraph = {
-          type: 'line', 
-          data: { 
-            // labels: [1,2,3,4,5,6,7,8,9,0], 
-            labels: labelvalues,
-            datasets: [ 
-              { 
-                  label: 'Air Quality on Selected Date', 
-                  data: airvalues, 
-                  fill: false,
-                  borderWidth : 2,
-                  backgroundColor: [
-                  ],
-                  pointHoverRadius: 5, //radius of point after hover
-                  pointBackgroundColor: 'Lavenderblush', //color of dots
-                  pointHoverBackgroundColor: '', //back.color of point after hover
-                  pointHoverBorderColor: '	#89CFF0',//color of point border after hover
-                  borderColor: '',//color of line            
-               
-              } 
-            ] 
-          }, 
-          options: { 
-                scales: { 
-                  yAxes: [{ 
-                    ticks: { 
-                        beginAtZero:true ,
-                        fontColor: "	#89CFF0",
-                        color: "red"
-                    } 
-                }],
-                    xAxes: [{ 
-                      ticks: { 
-                          display: false 
-                      } 
-                  }]  
-                } 
-            } 
-        }
-        var ctx = document.getElementById("aircanvas").getContext("2d");           //Created DOM reference to our tag for chart
-        // $('#datetext').text(ipdate); 
-        window.myLine = new Chart(ctx, airgraph);  
-      }
-
-      function tempgraph(labelvalues, tempvalues) {
-        //console.log(airvalues);
-        var tempgraph = {
-          type: 'line', 
-          data: { 
-            // labels: [1,2,3,4,5,6,7,8,9,0], 
-            labels: labelvalues,
-            datasets: [ 
-              { 
-                  label: 'Temperature on Selected Date', 
-                  data: tempvalues, 
-                  fill: false,
-                  borderWidth : 2,
-                  backgroundColor: [
-                  ],
-                  pointHoverRadius: 5, //radius of point after hover
-                  pointBackgroundColor: 'Lavenderblush', //color of dots
-                  pointHoverBackgroundColor: '', //back.color of point after hover
-                  pointHoverBorderColor: '	#89CFF0',//color of point border after hover
-                  borderColor: '',//color of line            
-               
-              } 
-            ] 
-          }, 
-          options: { 
-                scales: { 
-                  yAxes: [{ 
-                    ticks: { 
-                        beginAtZero:true ,
-                        fontColor: "	#89CFF0",
-                        color: "red"
-                    } 
-                }],
-                    xAxes: [{ 
-                      ticks: { 
-                          display: false 
-                      } 
-                  }]  
-                } 
-            } 
-        }
-        var ctx = document.getElementById("tempcanvas").getContext("2d");           //Created DOM reference to our tag for chart
-        window.myLine = new Chart(ctx, tempgraph);  
-      }
-
-      function humgraph(labelvalues, humvalues) {
-        //console.log(airvalues);
-        var humgraph = {
-          type: 'line', 
-          data: { 
-            // labels: [1,2,3,4,5,6,7,8,9,0], 
-            labels: labelvalues,
-            datasets: [ 
-              { 
-                  label: 'Humidity on Selected Date', 
-                  data: humvalues, 
-                  fill: false,
-                  borderWidth : 2,
-                  backgroundColor: [
-                  ],
-                  pointHoverRadius: 5, //radius of point after hover
-                  pointBackgroundColor: 'Lavenderblush', //color of dots
-                  pointHoverBackgroundColor: '', //back.color of point after hover
-                  pointHoverBorderColor: '	#89CFF0',//color of point border after hover
-                  borderColor: '',//color of line            
-               
-              } 
-            ] 
-          }, 
-          options: { 
-                scales: { 
-                  yAxes: [{ 
-                    ticks: { 
-                        beginAtZero:true ,
-                        fontColor: "	#89CFF0",
-                        color: "red"
-                    } 
-                }],
-                    xAxes: [{ 
-                      ticks: { 
-                          display: false 
-                      } 
-                  }]  
-                } 
-            } 
-        }
-        var ctx = document.getElementById("humcanvas").getContext("2d");           //Created DOM reference to our tag for chart
-        window.myLine = new Chart(ctx, humgraph);  
-      }
-
-      function wlevgraph(labelvalues, wlevvalues) {
-        //console.log(airvalues);
-        var wlevgraph = {
-          type: 'line', 
-          data: { 
-            // labels: [1,2,3,4,5,6,7,8,9,0], 
-            labels: labelvalues,
-            datasets: [ 
-              { 
-                  label: 'Watwe in Tank on Selected Date', 
-                  data: wlevvalues, 
-                  fill: false,
-                  borderWidth : 2,
-                  backgroundColor: [
-                  ],
-                  pointHoverRadius: 5, //radius of point after hover
-                  pointBackgroundColor: 'Lavenderblush', //color of dots
-                  pointHoverBackgroundColor: '', //back.color of point after hover
-                  pointHoverBorderColor: '	#89CFF0',//color of point border after hover
-                  borderColor: '',//color of line            
-               
-              } 
-            ] 
-          }, 
-          options: { 
-                scales: { 
-                  yAxes: [{ 
-                    ticks: { 
-                        beginAtZero:true ,
-                        fontColor: "	#89CFF0",
-                        color: "red"
-                    } 
-                }],
-                    xAxes: [{ 
-                      ticks: { 
-                          display: false 
-                      } 
-                  }]  
-                } 
-            } 
-        }
-        var ctx = document.getElementById("wlevcanvas").getContext("2d");           //Created DOM reference to our tag for chart
-        window.myLine = new Chart(ctx, wlevgraph);  
-      }
+      dategraph(labelvalues, airvalues, 'aircanvas', "Air Quality on Selected Date");
+      dategraph(labelvalues, tempvalues, 'tempcanvas', "Temperature on Selected Date");
+      dategraph(labelvalues, humvalues, 'humcanvas', "Humidity on Selected Date");
+      dategraph(labelvalues, wlevvalues, 'wlevcanvas', "Water Level on Selected Date");
 
       //end of gotdata
     }
 
     function gotData1(data) {
-      var mydata1 = [];
+      var mydata = [];
       var freqvalues = [];
-      var aalabelvalues = [];
+      var labelvalues = [];
+      // var tempdata = [];
 
-      var tdata1 = snapshotToArray(data);    // converted data to array of aa
-
-      var tempdata1 = [];
-      for(var i=0; i<tdata1.length; i++) {     // store copy of data in tempdata aa
-          tempdata1[i] = tdata1[i];
-      }
+      var tdata = snapshotToArray(data);    // converted data to array of aa
       
-      // for(var i=0; i<tempdata1.length; i++) {          // converting timestamp to date only tempdata
-      //   var timestamparrindexdate = new Date(tempdata1[i]['date']);
-      //   var rawdate = timestamparrindexdate.getFullYear() + '-' + (timestamparrindexdate.getMonth()+1) + '-' + timestamparrindexdate.getDate() 
-    
-      //   tempdata1[i]['date'] = rawdate;                
-      // }
+      mydata = mydatafunc(tdata, mydata);
 
-      for(var i=0; i<tempdata1.length; i++) {             //storing data on date to array mydata
-        tempdata1[i]['date'] = new Date(tempdata1[i]['date']);
-        if(ipdate == tempdata1[i]['date'].getFullYear() + '-' + (tempdata1[i]['date'].getMonth()+1) + '-' + tempdata1[i]['date'].getDate()) {
-            mydata1.push(tempdata1[i]);
-        }
+      for(var i=0; i<mydata.length; i++) {
+        labelvalues.push(mydata[i]['date']);
+        freqvalues.push(mydata[i]['val']);
       }
+      // console.log("Temp data date aa",tempdata1[8]['date']);
+      // console.log(mydata1);
 
-      for(var i=0; i<mydata1.length; i++) {
-        aalabelvalues.push(mydata1[i]['date']);
-        freqvalues.push(mydata1[i]['val']);
-      }
-      console.log("Temp data date aa",tempdata1[8]['date']);
-      console.log(mydata1);
-
-      freqgraph(aalabelvalues, freqvalues);
-
-      function freqgraph(aalabelvalues, freqvalues) {
-        //console.log(airvalues);
-        var freqgraph = {
-          type: 'line', 
-          data: { 
-            // labels: [1,2,3,4,5,6,7,8,9,0], 
-            labels: aalabelvalues,
-            datasets: [ 
-              { 
-                  label: 'Frequency on Selected Date', 
-                  data: freqvalues, 
-                  fill: false,
-                  borderWidth : 2,
-                  backgroundColor: [
-                  ],
-                  pointHoverRadius: 5, //radius of point after hover
-                  pointBackgroundColor: 'Lavenderblush', //color of dots
-                  pointHoverBackgroundColor: '', //back.color of point after hover
-                  pointHoverBorderColor: '	#89CFF0',//color of point border after hover
-                  borderColor: '',//color of line            
-               
-              } 
-            ] 
-          }, 
-          options: { 
-                scales: { 
-                  yAxes: [{ 
-                    ticks: { 
-                        beginAtZero:true ,
-                        fontColor: "	#89CFF0",
-                        color: "red"
-                    } 
-                }],
-                    xAxes: [{ 
-                      ticks: { 
-                          display: false 
-                      } 
-                  }]  
-                } 
-            } 
-        }
-        var ctx = document.getElementById("freqcanvas").getContext("2d");           //Created DOM reference to our tag for chart
-        window.myLine = new Chart(ctx, freqgraph);  
-      }
+      dategraph(labelvalues, freqvalues, 'freqcanvas', "Frequency on Selected Date");
       //end of gotdata
     }
 
@@ -872,6 +395,69 @@ componentDidMount() {
       console.log(err);
     }
 
+    function dategraph(labelvalues, airvalues, canvas, label) {
+      //console.log(airvalues);
+      var airgraph = {
+        type: 'line', 
+        data: { 
+          // labels: [1,2,3,4,5,6,7,8,9,0], 
+          labels: labelvalues,
+          datasets: [ 
+            { 
+                label: label, 
+                data: airvalues, 
+                fill: false,
+                borderWidth : 2,
+                backgroundColor: [
+                ],
+                pointRadius: 1,
+                pointHoverRadius: 5, //radius of point after hover
+                pointBackgroundColor: 'black', //color of dots
+                pointHoverBackgroundColor: '', //back.color of point after hover
+                pointHoverBorderColor: '	#89CFF0',//color of point border after hover
+                borderColor: 'white',//color of line            
+             
+            } 
+          ] 
+        }, 
+        options: { 
+          legend: {
+            labels: {
+                fontColor: "white",
+                fontSize: 14
+            }
+          }, 
+              scales: { 
+                yAxes: [{ 
+                  ticks: { 
+                      beginAtZero:true ,
+                      fontColor: "	#89CFF0",
+                      // color: "red"
+                  } 
+              }],
+                  xAxes: [{ 
+                    ticks: { 
+                        display: false 
+                    } 
+                }]  
+              } 
+          } 
+      }
+      var ctx = document.getElementById(canvas).getContext("2d");           //Created DOM reference to our tag for chart
+      // $('#datetext').text(ipdate); 
+      window.myLine = new Chart(ctx, airgraph);  
+    }
+
+    function mydatafunc(tdata, mydata) {
+      for(var i=0; i<tdata.length; i++) {             //storing data on date to array mydata
+        tdata[i]['date'] = new Date(tdata[i]['date']);
+        if(ipdate == tdata[i]['date'].getFullYear() + '-' + (tdata[i]['date'].getMonth()+1) + '-' + tdata[i]['date'].getDate()) {
+            mydata.push(tdata[i]);
+        }
+      }
+      return mydata;
+    }
+
     var ref = firebase.database().ref('tdata');
     ref.on('value', gotData, errData);
 
@@ -902,51 +488,84 @@ componentDidMount() {
             <div class="container">
 
               <div id="air"> 
-                <img src={airlogo} />
-                <div class="text"> <span> Air Quality : {this.state.airqualityvalue} </span> <canvas id="airpredcanvas"/> </div>
-                <canvas id="aircanvas" hidden/>
+                {/* <div class="text"> 
+                  <span> Air Quality : {this.state.airqualityvalue} </span>  
+                </div>   */}
+                <div id="airdash">
+                  <Progress type="dashboard" strokeLinecap="{square}" strokeColor="grey" percent={this.state.airqualityvalue} />
+                </div>
               </div>  <br></br>
               
               <div id="temp">  
-                <img src={templogo} />
-                <div class="text"><span> Current Temperature : {this.state.temperaturevalue} </span> <canvas id="temppredcanvas"/> </div>
-                <canvas id="tempcanvas" hidden/>
+                {/* <div class="text">
+                  <span> Current Temperature : {this.state.temperaturevalue} </span>  
+                </div>   */}
+                <div class="tempdash">
+                  <Progress type="dashboard" strokeLinecap="{square}" strokeColor="orange" percent={this.state.temperaturevalue} />
+                </div>
               </div><br></br>
               
-              <div id="hum">  
-                <img src={humlogo}/>
-                <div class="text"> <span> Current Humidity : {this.state.humidityvalue} </span> <canvas id="humpredcanvas"/> </div>
-                <canvas id="humcanvas" hidden/>
+              <div id="hum">      
+                {/* <div class="text"> 
+                  <span> Current Humidity : {this.state.humidityvalue} </span>    
+                </div> */}
+                <div class="humdash">
+                  <Progress type="dashboard" strokeLinecap="{square}" strokeColor="green" percent={this.state.humidityvalue} />             
+                </div>
+
               </div><br></br>
               
               <div id="tank">
-                <div>
-                  <Progress type="circle" percent={this.state.waterlevelvalue} />
+                {/* <div class="text">
+                  <span >Water Present in Tank : {this.state.waterlevelvalue}% </span>
+                </div> */}
+                <div class="watercircle"> 
+                  <Progress type="circle" strokeLinecap="{square}" percent={this.state.waterlevelvalue} />
                 </div> <br></br>
-                <span >Water Present in Tank : {this.state.waterlevelvalue}% </span>
-                <canvas id="wlevpredcanvas"/> 
-                <canvas id="wlevcanvas" hidden/>
               </div> <br></br>
               
               <div id="freq">
-                <img src={toiletfreqlogo}/>
-                <div class="text">
+                {/* <div class="text">
                   Currently Using : {this.state.cfreqvalue}
+                </div> */}
+                <div class="freqdash">
+                <Progress type="dashboard" strokeLinecap="{square}" strokeColor="red" percent={this.state.cfreqvalue} />             
                 </div>
-                <canvas id="freqcanvas" hidden/>
               </div>    <br></br>
 
               <div id="wet">  
-                <img src={wetfloorlogo}/>
                 <div class="text">
                   Wet Floor 1: {this.state.wet1value} <br></br>
                   Wet Floor 2: {this.state.wet2value}
                 </div>
               </div><br></br>
               
-              Cleaner's Quality : 
-              <div class="cquality"> {avg} </div>
-       
+              <div class="cleanerquality">
+                <div class="text">
+                  <span> Cleaner's Quality : {avg}</span> 
+                </div>
+                <div id="">
+
+                </div>  
+              </div>
+              <br></br> <br></br>
+
+              <div class="prediction-graph">
+                <div> <canvas id="airpredcanvas"  /> </div>
+                <div> <canvas id="temppredcanvas" /> </div>
+                <div> <canvas id="humpredcanvas"  /> </div>
+                <div> <canvas id="wlevpredcanvas" /> </div>
+              </div>
+
+              <div class="date-graph">
+                <div> <canvas id="aircanvas" hidden  /> </div>
+                <div> <canvas id="tempcanvas" hidden /> </div>
+                <div> <canvas id="humcanvas"  hidden /> </div>
+                <div> <canvas id="wlevcanvas" hidden /> </div>
+                <div> <canvas id="freqcanvas" hidden /> </div>
+              </div>
+
+         
             </div> {/*closing container*/}
 
         </div>   
