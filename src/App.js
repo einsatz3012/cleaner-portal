@@ -270,7 +270,6 @@ componentDidMount() {
     return returnArr;
   }
 
-
  //end of componentdidmount
 }
 
@@ -486,11 +485,7 @@ componentDidMount() {
           Select Date : <input type="date" ref={(input) => this.input = input} onChange={this.updateDate.bind(this)} />
 
             <div class="container">
-
               <div id="air"> 
-                {/* <div class="text"> 
-                  <span> Air Quality : {this.state.airqualityvalue} </span>  
-                </div>   */}
                 <div id="airdash">
                     <CircularProgressbar
                       value={this.state.airqualityvalue}
@@ -504,8 +499,11 @@ componentDidMount() {
                         textColor: '#2f4f4f',
                         textSize: '13px'
                       })}
-                    />  <font color="#2f4f4f"><b> Air Quality </b></font>
-                </div>
+                    />  
+                    <font color="#2f4f4f"><b> Air Quality </b></font>
+                </div> 
+                <div class="graphcss"> <canvas id="airpredcanvas"  /> </div>
+                <div class="graphcss"> <canvas id="aircanvas" hidden  /> </div>
               </div>  <br></br>
               
               <div id="temp">  
@@ -527,8 +525,11 @@ componentDidMount() {
                       })}
                   /> <font color="#ffae42"><b> Temperature </b></font>
                 </div>
+                <div class="graphcss"> <canvas id="temppredcanvas" /> </div>
+                <div class="graphcss"> <canvas id="tempcanvas" hidden /> </div>
+
               </div><br></br>
-              
+
               <div id="hum">      
                 {/* <div class="text"> 
                   <span> Current Humidity : {this.state.humidityvalue} </span>    
@@ -548,13 +549,11 @@ componentDidMount() {
                       })}
                     /> <font color="green"><b> Humidity </b></font>
                 </div>
-
+                <div class="graphcss"> <canvas id="humpredcanvas"  /> </div>
+                <div class="graphcss"> <canvas id="humcanvas"  hidden /> </div>
               </div><br></br>
-              
+
               <div id="tank">
-                {/* <div class="text">
-                  <span >Water Present in Tank : {this.state.waterlevelvalue}% </span>
-                </div> */}
                 <div id="watercircle"> 
                   <CircularProgressbar
                         value={this.state.waterlevelvalue}
@@ -569,13 +568,12 @@ componentDidMount() {
                           textSize: '16px'
                         })}
                   />  <font color="blue"><b> Water  Level </b></font>
-                </div> <br></br>
+                </div>
+                <div class="graphcss"> <canvas id="wlevpredcanvas" /> </div>
+                <div class="graphcss"> <canvas id="wlevcanvas" hidden /> </div>
               </div> <br></br>
-              
+
               <div id="freq">
-                {/* <div class="text">
-                  Currently Using : {this.state.cfreqvalue}
-                </div> */}
                 <div id="freqdash">
                   <CircularProgressbar
                         value={this.state.cfreqvalue}
@@ -591,12 +589,11 @@ componentDidMount() {
                         })}
                   /> <font color="red"><b> Frequency </b></font>
                 </div>
+                <div class="graphcss"> <canvas id="wlevpredcanvas" /> </div>
+                <div class="graphcss"> <canvas id="freqcanvas" hidden /> </div>
               </div>    <br></br>
-
-              <div class="cleanerquality">
-                {/* <div class="text">
-                  <span> Cleaner's Quality : {avg}</span> 
-                </div> */}
+                        
+              <div id="cleanerquality">
                 <div id="cleanerdash">
                   <CircularProgressbar
                         value={avg}
@@ -613,6 +610,7 @@ componentDidMount() {
                         })}
                   /> <font color="#dd1f58"> <b>Cleaner's Quality</b> </font>
                 </div>  
+                <div><div class="graphcss"> <canvas id="wlevpredcanvas" none /> </div></div>
               </div>
               <br></br>
 
@@ -621,22 +619,7 @@ componentDidMount() {
                   Wet Floor : {this.state.wetfloor} <br></br>
                 </div>
               </div><br></br> 
-          
-              <div class="prediction-graph">
-                <div class="graphcss"> <canvas id="airpredcanvas"  /> </div>
-                <div class="graphcss"> <canvas id="temppredcanvas" /> </div>
-                <div class="graphcss"> <canvas id="humpredcanvas"  /> </div>
-                <div class="graphcss"> <canvas id="wlevpredcanvas" /> </div>
-              </div>
 
-              <div class="date-graph">
-                <div class="graphcss"> <canvas id="aircanvas" hidden  /> </div>
-                <div class="graphcss"> <canvas id="tempcanvas" hidden /> </div>
-                <div class="graphcss"> <canvas id="humcanvas"  hidden /> </div>
-                <div class="graphcss"> <canvas id="wlevcanvas" hidden /> </div>
-                <div class="graphcss"> <canvas id="freqcanvas" hidden /> </div>
-              </div>
-            
             </div> {/*closing container*/}
                 
 
@@ -645,7 +628,7 @@ componentDidMount() {
         
     );
 
-    }
+   }
 }
 
 export default App;

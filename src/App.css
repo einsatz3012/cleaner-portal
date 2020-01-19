@@ -50,56 +50,21 @@ body {
   
   .container {
 	  font-size: 26px;
-	  display: flex;
-	  /* flex-direction: column; */
-	  flex-wrap: wrap;
+	  display: table;
   }
 
   .container div {
 	  padding: 5px;
+	  float: left;
   }
   
   .container canvas {
-	  /* position: relative; */
-	  /* width: 400px; */
-	  /* height: 400px; */
-	  /* margin: 10px; */
 	  padding: 10px;
   }
   
   .container div .text {
 	  padding: 5px;
 	  margin: 5px;
-  }
-
-  .prediction-graph {
-	  display: flex;
-	  flex-direction: column;
-	  flex-wrap: wrap;
-	  /* width: 400px;
-	  height: 400px; */
-  }
-
-  .date-graph {
-	  display: flex;
-	  flex-direction: column;
-	  flex-wrap: wrap;
-	  /* width: 400px;
-	  height: 400px; */
-  }
-
-  .prediction-graph .graphcss canvas{
-	/* margin: 10px; */
-	padding: 10px;
-	width: 300px;
-	height: 300px;
-  }
-
-  .date-graph .graphcss canvas{
-	/* margin: 10px; */
-	padding: 10px;
-	width: 250px;
-	height: 250px;
   }
 
   #airdash {
