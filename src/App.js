@@ -3,14 +3,12 @@ import './App.css';
 import * as firebase from 'firebase';
 import Chart from 'chart.js';
 // import {Line} from 'react-chartjs-2';
-import templogo from './components/temperature.png';
-import airlogo from './components/airquality.png';
-import humlogo from './components/humidity.png';
-import wetfloorlogo  from './components/wetfloor.png';
-import toiletfreqlogo  from './components/toiletfreq.png';
-import { CircularProgressbar } from 'react-circular-progressbar';
+
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+// import ChangingProgressProvider from "ChangingProgressProvider";
+
 import 'react-circular-progressbar/dist/styles.css';
-import {Progress} from 'antd';
+
 
 // var aa1 = [];
 var avg=0;
@@ -302,10 +300,10 @@ componentDidMount() {
         labelvalues.push(mydata[i]['date'])
       }
 
-      dategraph(labelvalues, airvalues, 'aircanvas', "Air Quality on Selected Date");
-      dategraph(labelvalues, tempvalues, 'tempcanvas', "Temperature on Selected Date");
-      dategraph(labelvalues, humvalues, 'humcanvas', "Humidity on Selected Date");
-      dategraph(labelvalues, wlevvalues, 'wlevcanvas', "Water Level on Selected Date");
+      dategraph(labelvalues, airvalues, 'aircanvas', "Air Quality on " + ipdate);
+      dategraph(labelvalues, tempvalues, 'tempcanvas', "Temperature on " + ipdate);
+      dategraph(labelvalues, humvalues, 'humcanvas', "Humidity on " + ipdate);
+      dategraph(labelvalues, wlevvalues, 'wlevcanvas', "Water Level on " + ipdate);
 
       //end of gotdata
     }
@@ -327,7 +325,7 @@ componentDidMount() {
       // console.log("Temp data date aa",tempdata1[8]['date']);
       // console.log(mydata1);
 
-      dategraph(labelvalues, freqvalues, 'freqcanvas', "Frequency on Selected Date");
+      dategraph(labelvalues, freqvalues, 'freqcanvas', "Frequency on " + ipdate);
       //end of gotdata
     }
 
@@ -474,13 +472,13 @@ componentDidMount() {
 
   render() {
     const mystyle = {
-      height: this.state.waterlevelvalue + '%',
-
+      height:'400px',
+      width: '400px',
     };
 
     return (      
         <div className="App">
-          <h2>  Today's Date : {this.state.datevalue}  </h2><br></br>
+          <h2>  Last Data Updated on : {this.state.datevalue}  </h2><br></br>
 
           {/* Select Date : <input type="date" value={this.state.ipdate} onChange={this.updateDate.bind(this)} /> */}
           Select Date : <input type="date" ref={(input) => this.input = input} onChange={this.updateDate.bind(this)} />
@@ -492,7 +490,19 @@ componentDidMount() {
                   <span> Air Quality : {this.state.airqualityvalue} </span>  
                 </div>   */}
                 <div id="airdash">
-                  <Progress type="dashboard" strokeLinecap="{square}" strokeColor="grey" percent={this.state.airqualityvalue} />
+                    <CircularProgressbar
+                      value={this.state.airqualityvalue}
+                      text={`${this.state.airqualityvalue} ppm`}
+                      circleRatio={0.75}
+                      styles={buildStyles({
+                        rotation: 1 / 2 + 1 / 8,
+                        strokeLinecap: "butt",
+                        trailColor: "white",
+                        pathColor: `#2f4f4f`,
+                        textColor: '#2f4f4f',
+                        textSize: '13px'
+                      })}
+                    />
                 </div>
               </div>  <br></br>
               
@@ -500,8 +510,20 @@ componentDidMount() {
                 {/* <div class="text">
                   <span> Current Temperature : {this.state.temperaturevalue} </span>  
                 </div>   */}
-                <div class="tempdash">
-                  <Progress type="dashboard" strokeLinecap="{square}" strokeColor="orange" percent={this.state.temperaturevalue} />
+                <div id="tempdash">
+                <CircularProgressbar
+                      value={this.state.temperaturevalue}
+                      text={`${this.state.temperaturevalue} ` + '`C'}
+                      circleRatio={0.75}
+                      styles={buildStyles({
+                        rotation: 1 / 2 + 1 / 8,
+                        strokeLinecap: "butt",
+                        trailColor: "white",
+                        pathColor: `orange`,
+                        textColor: 'orange',
+                        textSize: '16px'
+                      })}
+                  />
                 </div>
               </div><br></br>
               
@@ -509,8 +531,20 @@ componentDidMount() {
                 {/* <div class="text"> 
                   <span> Current Humidity : {this.state.humidityvalue} </span>    
                 </div> */}
-                <div class="humdash">
-                  <Progress type="dashboard" strokeLinecap="{square}" strokeColor="green" percent={this.state.humidityvalue} />             
+                <div id="humdash">
+                <CircularProgressbar
+                      value={this.state.humidityvalue}
+                      text={`${this.state.humidityvalue} %`}
+                      circleRatio={0.75}
+                      styles={buildStyles({
+                        rotation: 1 / 2 + 1 / 8,
+                        strokeLinecap: "butt",
+                        trailColor: "white",
+                        pathColor: `green`,
+                        textColor: 'green',
+                        textSize: '16px'
+                      })}
+                    />
                 </div>
 
               </div><br></br>
@@ -519,8 +553,20 @@ componentDidMount() {
                 {/* <div class="text">
                   <span >Water Present in Tank : {this.state.waterlevelvalue}% </span>
                 </div> */}
-                <div class="watercircle"> 
-                  <Progress type="circle" strokeLinecap="{square}" percent={this.state.waterlevelvalue} />
+                <div id="watercircle"> 
+                  <CircularProgressbar
+                        value={this.state.waterlevelvalue}
+                        text={`${this.state.waterlevelvalue} %`}
+                        circleRatio={0.75}
+                        styles={buildStyles({
+                          rotation: 1 / 2 + 1 / 8,
+                          strokeLinecap: "butt",
+                          trailColor: "white",
+                          pathColor: `blue`,
+                          textColor: 'blue',
+                          textSize: '16px'
+                        })}
+                  />  
                 </div> <br></br>
               </div> <br></br>
               
@@ -528,45 +574,72 @@ componentDidMount() {
                 {/* <div class="text">
                   Currently Using : {this.state.cfreqvalue}
                 </div> */}
-                <div class="freqdash">
-                <Progress type="dashboard" strokeLinecap="{square}" strokeColor="red" percent={this.state.cfreqvalue} />             
+                <div id="freqdash">
+                  <CircularProgressbar
+                        value={this.state.cfreqvalue}
+                        text={`${this.state.cfreqvalue} `}
+                        circleRatio={0.75}
+                        styles={buildStyles({
+                          rotation: 1 / 2 + 1 / 8,
+                          strokeLinecap: "butt",
+                          trailColor: "white",
+                          pathColor: `red`,
+                          textColor: 'red',
+                          textSize: '16px'
+                        })}
+                  />
                 </div>
               </div>    <br></br>
+
+              <div class="cleanerquality">
+                {/* <div class="text">
+                  <span> Cleaner's Quality : {avg}</span> 
+                </div> */}
+                <div id="cleanerdash">
+                  <CircularProgressbar
+                        value={avg}
+                        maxValue={1}
+                        text={`${avg} `}
+                        circleRatio={0.75}
+                        styles={buildStyles({
+                          rotation: 1 / 2 + 1 / 8,
+                          strokeLinecap: "butt",
+                          trailColor: "white",
+                          pathColor: `#e75480`,
+                          textColor: '#e75480',
+                          textSize: '16px'
+                        })}
+                  />
+                </div>  
+              </div>
+              <br></br>
+
 
               <div id="wet">  
                 <div class="text">
                   Wet Floor 1: {this.state.wet1value} <br></br>
                   Wet Floor 2: {this.state.wet2value}
                 </div>
-              </div><br></br>
-              
-              <div class="cleanerquality">
-                <div class="text">
-                  <span> Cleaner's Quality : {avg}</span> 
-                </div>
-                <div id="">
-
-                </div>  
-              </div>
-              <br></br> <br></br>
-
+              </div><br></br> 
+          
               <div class="prediction-graph">
-                <div> <canvas id="airpredcanvas"  /> </div>
-                <div> <canvas id="temppredcanvas" /> </div>
-                <div> <canvas id="humpredcanvas"  /> </div>
-                <div> <canvas id="wlevpredcanvas" /> </div>
+                <div class="graphcss"> <canvas id="airpredcanvas"  /> </div>
+                <div class="graphcss"> <canvas id="temppredcanvas" /> </div>
+                <div class="graphcss"> <canvas id="humpredcanvas"  /> </div>
+                <div class="graphcss"> <canvas id="wlevpredcanvas" /> </div>
               </div>
 
               <div class="date-graph">
-                <div> <canvas id="aircanvas" hidden  /> </div>
-                <div> <canvas id="tempcanvas" hidden /> </div>
-                <div> <canvas id="humcanvas"  hidden /> </div>
-                <div> <canvas id="wlevcanvas" hidden /> </div>
-                <div> <canvas id="freqcanvas" hidden /> </div>
+                <div class="graphcss"> <canvas id="aircanvas" hidden  /> </div>
+                <div class="graphcss"> <canvas id="tempcanvas" hidden /> </div>
+                <div class="graphcss"> <canvas id="humcanvas"  hidden /> </div>
+                <div class="graphcss"> <canvas id="wlevcanvas" hidden /> </div>
+                <div class="graphcss"> <canvas id="freqcanvas" hidden /> </div>
               </div>
-
-         
+            
             </div> {/*closing container*/}
+                
+
 
         </div>   
         
