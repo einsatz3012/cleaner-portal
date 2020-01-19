@@ -69,30 +69,34 @@ componentDidMount() {
   function cquality(data) {
     var tdata = snapshotToArray(data);
     var sum=0;
-    // var avg;
-    // var tempdata = [];
-    
-    // for(var i=0; i<tdata.length; i++) {     // store copy of data in tempdata aa
-    //     tempdata[i] = tdata[i];
-    // }
-    // console.log(tdata[0]['quality']);
+
     for(var i=0; i<tdata.length; i++) {
       sum = sum + tdata[i]['quality'];
     }
     console.log(avg);
     avg = sum/tdata.length;
-    console.log(avg);
-    
+
+    localStorage.setItem('cqualcache', avg);
 
   }
 
-  dbrefctdata.on('value', snap => { 
+  dbrefctdata.on('value', snap => {
+      if( (snap.val()['wet1'] == 1) || (snap.val()['wet2'] == 1) ) {
+        this.setState({
+          wetfloor: 'Yes'
+        })
+      } 
+      else {
+        this.setState({
+          wetfloor: 'No'
+        })
+      }
       this.setState({
         airqualityvalue: snap.val()['air'],
         humidityvalue: snap.val()['hum'],
         temperaturevalue: snap.val()['temp'],
-        wet1value: snap.val()['wet1'],
-        wet2value: snap.val()['wet2'],
+        // wet1value: snap.val()['wet1'],
+        // wet2value: snap.val()['wet2'],
         waterlevelvalue: snap.val()['wlev'],
         datevalue: snap.val()['date']
       });
@@ -107,9 +111,10 @@ componentDidMount() {
 
       localStorage.setItem('airqualityvaluecache', this.state.airqualityvalue);
       localStorage.setItem('humidityvaluecache' , this.state.humidityvalue);
-      localStorage.setItem('temperaturevaluecache' , this.state.temperaturevalu);
-      localStorage.setItem('wet1valuecache' , this.state.wet1value);
-      localStorage.setItem('wet2valuecache' , this.state.wet2value);
+      localStorage.setItem('temperaturevaluecache' , this.state.temperaturevalue);
+      // localStorage.setItem('wet1valuecache' , this.state.wet1value);
+      // localStorage.setItem('wet2valuecache' , this.state.wet2value);
+      localStorage.setItem('wetfloorcache' , this.state.wetfloor);
       localStorage.setItem('waterlevelvaluecache' , this.state.waterlevelvalue);
       localStorage.setItem('datevaluecache' , this.state.datevalue);
       localStorage.setItem('cfreqvaluecache' , this.state.cfreqvalue);
@@ -158,10 +163,10 @@ componentDidMount() {
         
         }
     }
-    predgraph(alllabel, airvalue, 'airpredcanvas', "Predicted Air Quality");
-    predgraph(alllabel, humvalue, 'humpredcanvas', "Predicted Humidity");
-    predgraph(alllabel, tempvalue, 'temppredcanvas', "Predicted Temperature");
-    predgraph(alllabel, wlevvalue, 'wlevpredcanvas', "Predicted Water Level");
+    predgraph(alllabel, airvalue, 'airpredcanvas', "Predicted Air Quality of Next 24 hours");
+    predgraph(alllabel, humvalue, 'humpredcanvas', "Predicted Humidity of Next 24 hours");
+    predgraph(alllabel, tempvalue, 'temppredcanvas', "Predicted Temperature of Next 24 hours");
+    predgraph(alllabel, wlevvalue, 'wlevpredcanvas', "Predicted Water Level of Next 24 hours");
     // console.log(airlabel);
     // console.log(humlabel);
     // console.log(airvalue);
@@ -237,18 +242,20 @@ componentDidMount() {
       airqualityvalue : localStorage.getItem('airqualityvaluecache'),
       humidityvalue : localStorage.getItem('humidityvaluecache'),
       temperaturevalue : localStorage.getItem('temperaturevaluecache'),
-      wet1value : localStorage.getItem('wet1valuecache'),
-      wet2value : localStorage.getItem('wet2valuecache'),
+      // wet1value : localStorage.getItem('wet1valuecache'),
+      // wet2value : localStorage.getItem('wet2valuecache'),
+      wetfloor : localStorage.getItem('wetfloorcache'),
       waterlevelvalue : localStorage.getItem('waterlevelvaluecache'),
       datevalue : localStorage.getItem('datevaluecache'),
-      cfreqvalue : localStorage.getItem('cfreqvaluecache')
+      cfreqvalue : localStorage.getItem('cfreqvaluecache'),
     });
+    avg = localStorage.getItem('cqualcache')
     // var alllabel = JSON.parse(localStorage.getItem("alllabelcache"));
     // var airvalue = JSON.parse(localStorage.getItem("airpredcache"))
-    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("airpredcache")), 'airpredcanvas')
-    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("humpredcache")), 'humpredcanvas')
-    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("temppredcache")), 'temppredcanvas')
-    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("wlevpredcache")), 'wlevpredcanvas')
+    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("airpredcache")), 'airpredcanvas', 'Predicted Air Quality of Next 24 hours')
+    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("humpredcache")), 'humpredcanvas', 'Predicted Air Humidity of Next 24 hours')
+    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("temppredcache")), 'temppredcanvas', 'Predicted Temperature of Next 24 hours')
+    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("wlevpredcache")), 'wlevpredcanvas', 'Predicted Water Level of Next 24 hours')
   } 
  
   function snapshotToArray(snapshot) {                                    // the snapshot is in the form id:{date: 'value', val: 'val'}
@@ -471,11 +478,6 @@ componentDidMount() {
 
 
   render() {
-    const mystyle = {
-      height:'400px',
-      width: '400px',
-    };
-
     return (      
         <div className="App">
           <h2>  Last Data Updated on : {this.state.datevalue}  </h2><br></br>
@@ -502,7 +504,7 @@ componentDidMount() {
                         textColor: '#2f4f4f',
                         textSize: '13px'
                       })}
-                    />
+                    />  <font color="#2f4f4f"><b> Air Quality </b></font>
                 </div>
               </div>  <br></br>
               
@@ -519,11 +521,11 @@ componentDidMount() {
                         rotation: 1 / 2 + 1 / 8,
                         strokeLinecap: "butt",
                         trailColor: "white",
-                        pathColor: `orange`,
-                        textColor: 'orange',
+                        pathColor: `#ffae42`,
+                        textColor: '#ffae42',
                         textSize: '16px'
                       })}
-                  />
+                  /> <font color="#ffae42"><b> Temperature </b></font>
                 </div>
               </div><br></br>
               
@@ -544,7 +546,7 @@ componentDidMount() {
                         textColor: 'green',
                         textSize: '16px'
                       })}
-                    />
+                    /> <font color="green"><b> Humidity </b></font>
                 </div>
 
               </div><br></br>
@@ -566,7 +568,7 @@ componentDidMount() {
                           textColor: 'blue',
                           textSize: '16px'
                         })}
-                  />  
+                  />  <font color="blue"><b> Water  Level </b></font>
                 </div> <br></br>
               </div> <br></br>
               
@@ -587,7 +589,7 @@ componentDidMount() {
                           textColor: 'red',
                           textSize: '16px'
                         })}
-                  />
+                  /> <font color="red"><b> Frequency </b></font>
                 </div>
               </div>    <br></br>
 
@@ -605,20 +607,18 @@ componentDidMount() {
                           rotation: 1 / 2 + 1 / 8,
                           strokeLinecap: "butt",
                           trailColor: "white",
-                          pathColor: `#e75480`,
-                          textColor: '#e75480',
+                          pathColor: `#dd1f58`,
+                          textColor: '#dd1f58',
                           textSize: '16px'
                         })}
-                  />
+                  /> <font color="#dd1f58"> <b>Cleaner's Quality</b> </font>
                 </div>  
               </div>
               <br></br>
 
-
               <div id="wet">  
                 <div class="text">
-                  Wet Floor 1: {this.state.wet1value} <br></br>
-                  Wet Floor 2: {this.state.wet2value}
+                  Wet Floor : {this.state.wetfloor} <br></br>
                 </div>
               </div><br></br> 
           
