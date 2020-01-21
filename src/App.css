@@ -1,6 +1,7 @@
 body {
 	/* background-color: #364C59; */
-	background: #7e909a;
+	/* background: #7e909a; */
+	background: "whitesmoke";
 	/* background: #48484a; */
 } 
 
@@ -92,3 +93,68 @@ body {
 	  width: 150px;
 	  padding: 15px;
   }
+
+#air{
+	box-shadow: 0 4px 8px 0 darkgray;
+	border-radius: 15px;
+  transition: 0.3s;
+  padding: 20px;
+}
+
+#hum{
+	box-shadow: 0 4px 8px 0 darkgray;
+	border-radius: 15px;
+  transition: 0.3s;
+  padding: 20px;
+}
+
+#temp{
+	box-shadow: 0 4px 8px 0 darkgray;
+	border-radius: 15px;
+  transition: 0.3s;
+  padding: 20px;
+}
+
+#tank{
+	box-shadow: 0 4px 8px 0 darkgray;
+	border-radius: 15px;
+  transition: 0.3s;
+  padding: 20px;
+}
+
+#freq{
+	box-shadow: 0 4px 8px 0 darkgrey;
+	border-radius: 15px;
+  transition: 0.3s;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+}
+
+.freq-text {
+	vertical-align: center;
+	padding-top: 50px;
+}
+
+.freq-box-red {
+	margin-left: 20px;
+	text-align: center;
+	width: 200px;
+	height: 150px;
+	background-color: red;
+	box-shadow: 0 4px 8px 0 whitesmoke;
+	padding-top: 40px;
+	/* position: absolute;
+	left: 200px; */
+}
+
+.freq-box-green {
+	margin-left: 20px;
+	width: 200px;
+	height: 150px;
+	background-color: green;
+	box-shadow: 0 4px 8px 0 whitesmoke;
+	padding-top: 40px;
+	/* position: absolute;
+	left: 200px; */
+}

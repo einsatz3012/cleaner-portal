@@ -12,7 +12,8 @@ import 'react-circular-progressbar/dist/styles.css';
 
 // var aa1 = [];
 var avg=0;
-var avg1=0;
+// var avg1=0;
+var canvas1;
 
 class App extends Component {
 
@@ -20,67 +21,67 @@ class App extends Component {
     super();
     this.state = {
       ipdate: '',
+      tid: '',
+      buttonSelected: ''
     };
   }
 
-componentDidMount() {
-  navigator.serviceWorker.register('sw.js');
 
-  function showNotification() {
-  Notification.requestPermission(function(result) {
-    console.log('Notification permission status inside show notification:', result);
-    if (result === 'granted') {
-      navigator.serviceWorker.ready.then(function(registration) {
-        
-        registration.showNotification('Air Quality is good :)');
-      });
-    }
-  });
-  }
-  
-  function showNotification1() {
-  Notification.requestPermission(function(result) {
-    console.log('Notification permission status inside show notification1:', result);
-    if (result === 'granted') {
-      navigator.serviceWorker.ready.then(function(registration) {
-        
-        registration.showNotification('Air Quality is tooo less.....');
-      });
-    }
-  });
+  componentDidMount() {
+    // document.getElementById("humcanvas");
+    canvas1= document.createElement("canvas");
+
   }
 
-  const dbrefctdata = firebase.database().ref().child('ctdata');
-  // const dbreftdata = firebase.database().ref().child('tdata');
-  const dbrefcfreq = firebase.database().ref().child('cfreq');
-  const dbrefcqual = firebase.database().ref('cqual');
-  dbrefcqual.on('value', cquality);
-  // const dbrefprediction = firebase.database().ref().child('prediction');
+  handleClick() {
 
-
-
-  dbrefcfreq.on('value', snap => {
     this.setState({
-      cfreqvalue: snap.val()['cfreq']
+      buttonSelected:'1'
+    })
+    navigator.serviceWorker.register('sw.js');
+
+    function showNotification() {
+    Notification.requestPermission(function(result) {
+      console.log('Notification permission status inside show notification:', result);
+      if (result === 'granted') {
+        navigator.serviceWorker.ready.then(function(registration) {
+          
+          registration.showNotification('Air Quality is good :)');
+        });
+      }
     });
-
-  });
-
-  function cquality(data) {
-    var tdata = snapshotToArray(data);
-    var sum=0;
-
-    for(var i=0; i<tdata.length; i++) {
-      sum = sum + tdata[i]['quality'];
     }
-    console.log(avg);
-    avg = sum/tdata.length;
+    
+    function showNotification1() {
+    Notification.requestPermission(function(result) {
+      console.log('Notification permission status inside show notification1:', result);
+      if (result === 'granted') {
+        navigator.serviceWorker.ready.then(function(registration) {
+          
+          registration.showNotification('Air Quality is tooo less.....');
+        });
+      }
+    });
+    }
 
-    localStorage.setItem('cqualcache', avg);
-
-  }
-
-  dbrefctdata.on('value', snap => {
+    var tid = this.input1.value;
+    var ipdate = this.input.value;
+    console.log(tid);
+    console.log(ipdate);
+    
+    var refcfreq = firebase.database().ref(tid).child('cfreq');       // current frequency
+    refcfreq.on('value', snap => {
+      this.setState({
+        cfreqvalue: snap.val()['cfreq']
+      });
+      console.log("Currently using",this.state.cfreqvalue)          //done
+    });
+    
+    var refcqual = firebase.database().ref(tid).child('cqual');       // cleaner qualit
+    refcqual.on('value', gotCqual, errData);
+    
+    var refctdata = firebase.database().ref(tid).child('ctdata');     // current sensor data
+    refctdata.on('value', snap => {
       if( (snap.val()['wet1'] == 1) || (snap.val()['wet2'] == 1) ) {
         this.setState({
           wetfloor: 'Yes'
@@ -95,8 +96,6 @@ componentDidMount() {
         airqualityvalue: snap.val()['air'],
         humidityvalue: snap.val()['hum'],
         temperaturevalue: snap.val()['temp'],
-        // wet1value: snap.val()['wet1'],
-        // wet2value: snap.val()['wet2'],
         waterlevelvalue: snap.val()['wlev'],
         datevalue: snap.val()['date']
       });
@@ -108,80 +107,241 @@ componentDidMount() {
         showNotification1();
         console.log("This is else statemenet moret han 29");
       }
-
       localStorage.setItem('airqualityvaluecache', this.state.airqualityvalue);
       localStorage.setItem('humidityvaluecache' , this.state.humidityvalue);
       localStorage.setItem('temperaturevaluecache' , this.state.temperaturevalue);
-      // localStorage.setItem('wet1valuecache' , this.state.wet1value);
-      // localStorage.setItem('wet2valuecache' , this.state.wet2value);
       localStorage.setItem('wetfloorcache' , this.state.wetfloor);
       localStorage.setItem('waterlevelvaluecache' , this.state.waterlevelvalue);
       localStorage.setItem('datevaluecache' , this.state.datevalue);
       localStorage.setItem('cfreqvaluecache' , this.state.cfreqvalue);
       
-  });   
-
-  const dbrefprediction = firebase.database().ref('prediction');
-  dbrefprediction.on('value', prediction);
-
-  function prediction(data) {
-    var tdata1 = snapshotToArray(data);
-    // var airlabel = [];
-    // var humlabel = [];
-    // var templabel = [];
-    // var wlevlabel = [];
-    var alllabel = [];
-    var airvalue = [];
-    var humvalue = [];
-    var tempvalue = [];
-    var wlevvalue = [];
-    var tempdata1 = [];
-    
-    for(var i=0; i<tdata1.length; i++) {     // store copy of data in tempdata aa
-        tempdata1[i] = tdata1[i];
-    }
-
-    // console.log(tempdata1[0]);              //0-air 1-hum 2-temp 3-wlev
-    for(var i=0 ; i<tempdata1.length; i++) {
-        for(var j=0; j<24; j++) {
-          if(i==0) {
-            alllabel.push(tempdata1[i][j]['hour']);
-            airvalue.push(tempdata1[i][j]['val']);
-          }
-          else if(i==1) {
-            // alllabel.push(tempdata1[i][j]['hour']);
-            humvalue.push(tempdata1[i][j]['val']);
-          }
-          else if(i==2) {
-            // templabel.push(tempdata1[i][j]['hour']);
-            tempvalue.push(tempdata1[i][j]['val']);
-          }
-          else if(i==3) {
-            // wlevlabel.push(tempdata1[i][j]['hour']);
-            wlevvalue.push(tempdata1[i][j]['val']);
-          }
+    });  
         
-        }
-    }
-    predgraph(alllabel, airvalue, 'airpredcanvas', "Predicted Air Quality of Next 24 hours");
-    predgraph(alllabel, humvalue, 'humpredcanvas', "Predicted Humidity of Next 24 hours");
-    predgraph(alllabel, tempvalue, 'temppredcanvas', "Predicted Temperature of Next 24 hours");
-    predgraph(alllabel, wlevvalue, 'wlevpredcanvas', "Predicted Water Level of Next 24 hours");
-    // console.log(airlabel);
-    // console.log(humlabel);
-    // console.log(airvalue);
-    // console.log(humvalue);
+    var reffreq = firebase.database().ref(tid).child('freq');     // freq data
+    reffreq.on('value', gotFreq, errData);
+    
+    var refprediction = firebase.database().ref(tid).child('prediction');     // predicted data
+    refprediction.on('value', gotPrediction, errData);
 
-    localStorage.setItem('airpredcache',JSON.stringify(airvalue));
-    localStorage.setItem('humpredcache' ,JSON.stringify(humvalue));
-    localStorage.setItem('temppredcache' ,JSON.stringify(tempvalue));
-    localStorage.setItem('wlevpredcache' ,JSON.stringify(wlevvalue));
-    localStorage.setItem('alllabelcache' ,JSON.stringify(alllabel));
-    // console.log(localStorage.getItem('airpredcache'))
+    var reftdata = firebase.database().ref(tid).child('tdata');  // toilet data
+    reftdata.on('value', gottData, errData);
+    
+ 
+    function gotCqual(data) {
+      var tdata = snapshotToArray(data);
+      var sum=0;
+  
+      for(var i=0; i<tdata.length; i++) {
+        sum = sum + tdata[i]['quality'];
+      }
+      // console.log(avg);
+      avg = sum/tdata.length;
+
+      console.log("Average Cleaner Quality",avg)        //done
+  
+      localStorage.setItem('cqualcache', avg);
+    }
+
+    function gotFreq(data) {
+      var ipdate1 = new Date(ipdate);
+      var rawdate = ipdate1.getFullYear() + '-' + (ipdate1.getMonth()+1) + '-' + ipdate1.getDate() 
+      ipdate = rawdate;
+
+      var tdata = snapshotToArray(data);
+
+      var mydata = [];
+      var freqvalues = [];
+      var labelvalues = [];
+
+      var tdata = snapshotToArray(data);    // converted data to array of aa
+      
+      mydata = mydatafunc(tdata, mydata);
+
+      for(var i=0; i<mydata.length; i++) {
+        labelvalues.push(mydata[i]['date']);
+        freqvalues.push(mydata[i]['freq']);
+      }
+      console.log("Frequency of date : ",freqvalues);
+      dategraph(labelvalues, freqvalues, 'freqcanvas', "Frequency on " + ipdate);      
+    } 
+
+    function gotPrediction(data) {
+      var tdata1 = snapshotToArray(data);
+      // var airlabel = [];
+      // var humlabel = [];
+      // var templabel = [];
+      // var wlevlabel = [];
+      var alllabel = [];
+      var airvalue = [];
+      var humvalue = [];
+      var tempvalue = [];
+      var wlevvalue = [];
+      var tempdata1 = [];
+      
+      for(var i=0; i<tdata1.length; i++) {     // store copy of data in tempdata aa
+          tempdata1[i] = tdata1[i];
+      }
+  
+      // console.log(tempdata1[0]);              //0-air 1-hum 2-temp 3-wlev
+      for(var i=0 ; i<tempdata1.length; i++) {
+          for(var j=0; j<24; j++) {
+            if(i==0) {
+              alllabel.push(tempdata1[i][j]['hour']);
+              airvalue.push(tempdata1[i][j]['val']);
+            }
+            else if(i==1) {
+              // alllabel.push(tempdata1[i][j]['hour']);
+              humvalue.push(tempdata1[i][j]['val']);
+            }
+            else if(i==2) {
+              // templabel.push(tempdata1[i][j]['hour']);
+              tempvalue.push(tempdata1[i][j]['val']);
+            }
+            else if(i==3) {
+              // wlevlabel.push(tempdata1[i][j]['hour']);
+              wlevvalue.push(tempdata1[i][j]['val']);
+            }
+          
+          }
+      }
+      predgraph(alllabel, airvalue, 'airpredcanvas', "Predicted Air Quality of Next 24 hours");
+      predgraph(alllabel, humvalue, 'humpredcanvas', "Predicted Humidity of Next 24 hours");
+      predgraph(alllabel, tempvalue, 'temppredcanvas', "Predicted Temperature of Next 24 hours");
+      predgraph(alllabel, wlevvalue, 'wlevpredcanvas', "Predicted Water Level of Next 24 hours");
+      // console.log(airlabel);
+      // console.log(humlabel);
+      // console.log(airvalue);
+      // console.log(humvalue);
+  
+      localStorage.setItem('airpredcache',JSON.stringify(airvalue));
+      localStorage.setItem('humpredcache' ,JSON.stringify(humvalue));
+      localStorage.setItem('temppredcache' ,JSON.stringify(tempvalue));
+      localStorage.setItem('wlevpredcache' ,JSON.stringify(wlevvalue));
+      localStorage.setItem('alllabelcache' ,JSON.stringify(alllabel));
+    }
+
+    function gottData(data) {
+      var ipdate1 = new Date(ipdate);
+      var rawdate = ipdate1.getFullYear() + '-' + (ipdate1.getMonth()+1) + '-' + ipdate1.getDate() 
+      ipdate = rawdate;
+      
+      // console.log("ip date converted to ingle digti ",ipdate);
+      var tdata = snapshotToArray(data);
+      
+      var mydata = [];
+      var airvalues = [];
+      var tempvalues = [];
+      var humvalues = [];
+      var wlevvalues = [];
+      var labelvalues = [];
+      
+      mydata = mydatafunc(tdata, mydata);
+      // console.log(mydata);                    
+      for(var i=0; i<mydata.length; i++) {
+        airvalues.push(mydata[i]['air']);
+        tempvalues.push(mydata[i]['temp']);
+        humvalues.push(mydata[i]['hum']);
+        wlevvalues.push(mydata[i]['wlev']);
+        labelvalues.push(mydata[i]['date'])
+      }
+
+      dategraph(labelvalues, airvalues, 'aircanvas', "Air Quality on " + ipdate);
+      dategraph(labelvalues, tempvalues, 'tempcanvas', "Temperature on " + ipdate);
+      dategraph(labelvalues, humvalues, 'humcanvas', "Humidity on " + ipdate);
+      dategraph(labelvalues, wlevvalues, 'wlevcanvas', "Water Level on " + ipdate);
+
+
+      function dategraph(labelvalues, airvalues, canvas, label) {
+        //console.log(airvalues);
+        var airgraph = {
+          type: 'line', 
+          data: { 
+            // labels: [1,2,3,4,5,6,7,8,9,0], 
+            labels: labelvalues,
+            datasets: [ 
+              { 
+                  label: label, 
+                  data: airvalues, 
+                  fill: false,
+                  borderWidth : 2,
+                  backgroundColor: [
+                  ],
+                  pointRadius: 1,
+                  pointHoverRadius: 5, //radius of point after hover
+                  pointBackgroundColor: 'black', //color of dots
+                  pointHoverBackgroundColor: '', //back.color of point after hover
+                  pointHoverBorderColor: '	#89CFF0',//color of point border after hover
+                  borderColor: 'darkgrey',//color of line            
+               
+              } 
+            ] 
+          }, 
+          options: { 
+            legend: {
+              labels: {
+                  fontColor: "darkgrey",
+                  fontSize: 14
+              }
+            }, 
+                scales: { 
+                  yAxes: [{ 
+                    color: "orange",
+  
+                    ticks: { 
+                        beginAtZero:true ,
+                        fontColor: "	#89CFF0",
+                        // color: 'white'
+                        
+                        
+                    } 
+                }],
+                    xAxes: [{ 
+                      color: "orange",
+                      ticks: { 
+                          display: false, 
+                          
+  
+                      } 
+                  }]  
+                } 
+            } 
+        }
+        var ctx = document.getElementById(canvas).getContext("2d");           //Created DOM reference to our tag for chart
+        // $('#datetext').text(ipdate); 
+        window.myLine = new Chart(ctx, airgraph);  
+      }
 
       
     }
-    
+
+
+    function snapshotToArray(snapshot) {                                    // the snapshot is in the form id:{date: 'value', val: 'val'}
+      var returnArr = [];                                                 // we can't feed the same data to the chart, we convert the 
+      let i = 0;                                                          // snapshot into the Array with [{date, val, key}] formate
+      snapshot.forEach(function(childSnapshot) {
+          var item = childSnapshot.val();
+          item.k = i;
+          returnArr.push(item);
+          i++;
+      });
+      return returnArr;
+    }
+  
+    function errData(err){
+      console.log(err);
+    }
+
+    function mydatafunc(tdata, mydata) {
+      for(var i=0; i<tdata.length; i++) {             //storing data on date to array mydata
+        tdata[i]['date'] = new Date(tdata[i]['date']);
+        if(ipdate == tdata[i]['date'].getFullYear() + '-' + (tdata[i]['date'].getMonth()+1) + '-' + tdata[i]['date'].getDate()) {
+            mydata.push(tdata[i]);
+        }
+      }
+      return mydata;
+    }
+
+        
     function predgraph(label, value, canvas, titlelabel) {
       //console.log(airvalues);
       var airgraph = {
@@ -202,7 +362,7 @@ componentDidMount() {
                 pointBackgroundColor: 'Blue', //color of dots
                 pointHoverBackgroundColor: '', //back.color of point after hover
                 pointHoverBorderColor: '	#89CFF0',//color of point border after hover
-                borderColor: 'white',//color of line            
+                borderColor: 'darkgrey',//color of line            
              
             } 
           ] 
@@ -210,7 +370,7 @@ componentDidMount() {
         options: { 
               legend: {
                 labels: {
-                    fontColor: "white",
+                    fontColor: "darkgrey",
                     fontSize: 14
                 }
               },
@@ -237,41 +397,90 @@ componentDidMount() {
       window.myLine = new Chart(ctx, airgraph);  
     }  
 
-  if (!navigator.onLine) {
-    this.setState({
-      airqualityvalue : localStorage.getItem('airqualityvaluecache'),
-      humidityvalue : localStorage.getItem('humidityvaluecache'),
-      temperaturevalue : localStorage.getItem('temperaturevaluecache'),
-      // wet1value : localStorage.getItem('wet1valuecache'),
-      // wet2value : localStorage.getItem('wet2valuecache'),
-      wetfloor : localStorage.getItem('wetfloorcache'),
-      waterlevelvalue : localStorage.getItem('waterlevelvaluecache'),
-      datevalue : localStorage.getItem('datevaluecache'),
-      cfreqvalue : localStorage.getItem('cfreqvaluecache'),
-    });
-    avg = localStorage.getItem('cqualcache')
-    // var alllabel = JSON.parse(localStorage.getItem("alllabelcache"));
-    // var airvalue = JSON.parse(localStorage.getItem("airpredcache"))
-    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("airpredcache")), 'airpredcanvas', 'Predicted Air Quality of Next 24 hours')
-    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("humpredcache")), 'humpredcanvas', 'Predicted Air Humidity of Next 24 hours')
-    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("temppredcache")), 'temppredcanvas', 'Predicted Temperature of Next 24 hours')
-    predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("wlevpredcache")), 'wlevpredcanvas', 'Predicted Water Level of Next 24 hours')
-  } 
- 
-  function snapshotToArray(snapshot) {                                    // the snapshot is in the form id:{date: 'value', val: 'val'}
-    var returnArr = [];                                                 // we can't feed the same data to the chart, we convert the 
-    let i = 0;                                                          // snapshot into the Array with [{date, val, key}] formate
-    snapshot.forEach(function(childSnapshot) {
-        var item = childSnapshot.val();
-        item.k = i;
-        returnArr.push(item);
-        i++;
-    });
-    return returnArr;
-  }
+    function dategraph(labelvalues, airvalues, canvas, label) {
+      //console.log(airvalues);
+      var airgraph = {
+        type: 'line', 
+        data: { 
+          // labels: [1,2,3,4,5,6,7,8,9,0], 
+          labels: labelvalues,
+          datasets: [ 
+            { 
+                label: label, 
+                data: airvalues, 
+                fill: false,
+                borderWidth : 2,
+                backgroundColor: [
+                ],
+                pointRadius: 1,
+                pointHoverRadius: 5, //radius of point after hover
+                pointBackgroundColor: 'black', //color of dots
+                pointHoverBackgroundColor: '', //back.color of point after hover
+                pointHoverBorderColor: '	#89CFF0',//color of point border after hover
+                borderColor: 'darkgrey',//color of line            
+             
+            } 
+          ] 
+        }, 
+        options: { 
+          legend: {
+            labels: {
+                fontColor: "darkgrey",
+                fontSize: 14
+            }
+          }, 
+              scales: { 
+                yAxes: [{ 
+                  color: "orange",
 
- //end of componentdidmount
-}
+                  ticks: { 
+                      beginAtZero:true ,
+                      fontColor: "	#89CFF0",
+                      // color: 'white'
+                      
+                      
+                  } 
+              }],
+                  xAxes: [{ 
+                    color: "orange",
+                    ticks: { 
+                        display: false, 
+                        
+
+                    } 
+                }]  
+              } 
+          } 
+      }
+      var ctx = document.getElementById(canvas).getContext("2d");           //Created DOM reference to our tag for chart
+      // $('#datetext').text(ipdate); 
+      window.myLine = new Chart(ctx, airgraph);  
+    }
+
+    if (!navigator.onLine) {
+      this.setState({
+        airqualityvalue : localStorage.getItem('airqualityvaluecache'),
+        humidityvalue : localStorage.getItem('humidityvaluecache'),
+        temperaturevalue : localStorage.getItem('temperaturevaluecache'),
+        // wet1value : localStorage.getItem('wet1valuecache'),
+        // wet2value : localStorage.getItem('wet2valuecache'),
+        wetfloor : localStorage.getItem('wetfloorcache'),
+        waterlevelvalue : localStorage.getItem('waterlevelvaluecache'),
+        datevalue : localStorage.getItem('datevaluecache'),
+        cfreqvalue : localStorage.getItem('cfreqvaluecache'),
+      });
+      avg = localStorage.getItem('cqualcache')
+      // var alllabel = JSON.parse(localStorage.getItem("alllabelcache"));
+      // var airvalue = JSON.parse(localStorage.getItem("airpredcache"))
+      predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("airpredcache")), 'airpredcanvas', 'Predicted Air Quality of Next 24 hours')
+      predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("humpredcache")), 'humpredcanvas', 'Predicted Air Humidity of Next 24 hours')
+      predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("temppredcache")), 'temppredcanvas', 'Predicted Temperature of Next 24 hours')
+      predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("wlevpredcache")), 'wlevpredcanvas', 'Predicted Water Level of Next 24 hours')
+    } 
+    // console.log(this.state.airqualityvalue);
+
+    // updateDate(tdata)
+  }
 
   updateDate() {
 
@@ -333,55 +542,7 @@ componentDidMount() {
 
       dategraph(labelvalues, freqvalues, 'freqcanvas', "Frequency on " + ipdate);
       //end of gotdata
-    }
-
-    function gotData2(data) {
-      var mydata2 = [];
-      var qualvalues = [];
- 
-      var tdata2 = snapshotToArray(data);    // converted data to array of aa
-
-      var tempdata2 = [];
-      for(var i=0; i<tdata2.length; i++) {     // store copy of data in tempdata aa
-          tempdata2[i] = tdata2[i];
-      }
-      
-      for(var i=0; i<tempdata2.length; i++) {             //storing data on date to array mydata
-        tempdata2[i]['date'] = new Date(tempdata2[i]['date']);
-        if(ipdate == tempdata2[i]['date'].getFullYear() + '-' + (tempdata2[i]['date'].getMonth()+1) + '-' + tempdata2[i]['date'].getDate()) {
-            mydata2.push(tempdata2[i]);
-        }
-      }
-
-      for(var i=0; i<tempdata2.length; i++) {
-        if(ipdate == tempdata2[i]['date']) {
-            mydata2.push(tempdata2[i]);
-        }
-      }
-
-      for(var i=0; i<mydata2.length; i++) {
-        qualvalues.push(mydata2[i]['quality']);
-        // freqvalues.push(mydata1[i]['val']);
-      }
-
-      var sum=0;
-      // var avg = 0;
-      for(var i=0; i<qualvalues.length; i++) {
-        sum = sum + qualvalues[i];
-      }
-      console.log(avg1);
-      avg1 = sum/qualvalues.length;
-      console.log(avg1);
-      // console.log(tempdata2[4]['date']);
-      // console.log(mydata2);
-      // console.log(qualvalues);
-
-      // freqgraph(aalabelvalues, freqvalues);
-
-    
-      //end of gotdata
-    }
-    
+    } 
 
     function snapshotToArray(snapshot) {                                    // the snapshot is in the form id:{date: 'value', val: 'val'}
       var returnArr = [];                                                 // we can't feed the same data to the chart, we convert the 
@@ -419,7 +580,7 @@ componentDidMount() {
                 pointBackgroundColor: 'black', //color of dots
                 pointHoverBackgroundColor: '', //back.color of point after hover
                 pointHoverBorderColor: '	#89CFF0',//color of point border after hover
-                borderColor: 'white',//color of line            
+                borderColor: 'darkgrey',//color of line            
              
             } 
           ] 
@@ -427,21 +588,28 @@ componentDidMount() {
         options: { 
           legend: {
             labels: {
-                fontColor: "white",
+                fontColor: "darkgrey",
                 fontSize: 14
             }
           }, 
               scales: { 
                 yAxes: [{ 
+                  color: "orange",
+
                   ticks: { 
                       beginAtZero:true ,
                       fontColor: "	#89CFF0",
-                      // color: "red"
+                      // color: 'white'
+                      
+                      
                   } 
               }],
                   xAxes: [{ 
+                    color: "orange",
                     ticks: { 
-                        display: false 
+                        display: false, 
+                        
+
                     } 
                 }]  
               } 
@@ -468,9 +636,6 @@ componentDidMount() {
     var ref1 = firebase.database().ref('aa');
     ref1.on('value', gotData1, errData);
 
-    var ref2 = firebase.database().ref('cqual');
-    ref2.on('value', gotData2, errData);
-
   //end of upatdate
   }
 
@@ -480,15 +645,25 @@ componentDidMount() {
     return (      
         <div className="App">
           <h2>  Last Data Updated on : {this.state.datevalue}  </h2><br></br>
+          <h2> Enter Toilet ID: 
+          <input type="text" ref={(input1) => this.input1 = input1} 
+          onChange={() => this.setState({
+            buttonSelected: true
+          })} 
+          onChange={this.handleClick.bind(this)}/></h2>
+          Select Date : 
+          <input type="date" 
+          ref={(input) => this.input = input} 
+          onChange={this.handleClick.bind(this)}/>
+          {/* <input type="submit" value="submit" onClick={this.handleClick.bind(this)}/> */}
 
-          {/* Select Date : <input type="date" value={this.state.ipdate} onChange={this.updateDate.bind(this)} /> */}
-          Select Date : <input type="date" ref={(input) => this.input = input} onChange={this.updateDate.bind(this)} />
-
-            <div class="container">
+            {this.state.buttonSelected ?
+              (<div class="container">
               <div id="air"> 
                 <div id="airdash">
                     <CircularProgressbar
                       value={this.state.airqualityvalue}
+                      maxValue={5}
                       text={`${this.state.airqualityvalue} ppm`}
                       circleRatio={0.75}
                       styles={buildStyles({
@@ -573,27 +748,18 @@ componentDidMount() {
                 <div class="graphcss"> <canvas id="wlevcanvas" hidden /> </div>
               </div> <br></br>
 
+     
               <div id="freq">
-                <div id="freqdash">
-                  <CircularProgressbar
-                        value={this.state.cfreqvalue}
-                        text={`${this.state.cfreqvalue} `}
-                        circleRatio={0.75}
-                        styles={buildStyles({
-                          rotation: 1 / 2 + 1 / 8,
-                          strokeLinecap: "butt",
-                          trailColor: "white",
-                          pathColor: `red`,
-                          textColor: 'red',
-                          textSize: '16px'
-                        })}
-                  /> <font color="red"><b> Frequency </b></font>
-                </div>
-                <div class="graphcss"> <canvas id="wlevpredcanvas" /> </div>
-                <div class="graphcss"> <canvas id="freqcanvas" hidden /> </div>
+
+                  <font class="freq-text" color="red"><b> Frequency </b></font>
+                  {this.state.cfreqvalue>5 ? <div className="freq-box-red"> {this.state.cfreqvalue} <br/> Max capacity reached</div> : <div className="freq-box-green" > {this.state.cfreqvalue} </div>}
+
+                
+                {/* <div class="graphcss"> <canvas id="wlevpredcanvas" /> </div> */}
+                <div class="graphcss"> <canvas id="freqcanvas" hidden/> </div>
               </div>    <br></br>
                         
-              <div id="cleanerquality">
+              <div id="cleanerquality" >
                 <div id="cleanerdash">
                   <CircularProgressbar
                         value={avg}
@@ -610,7 +776,7 @@ componentDidMount() {
                         })}
                   /> <font color="#dd1f58"> <b>Cleaner's Quality</b> </font>
                 </div>  
-                <div><div class="graphcss"> <canvas id="wlevpredcanvas" none /> </div></div>
+                <div><div class="graphcss"> <canvas id="wlevpredcanvas" hidden /> </div></div>
               </div>
               <br></br>
 
@@ -620,8 +786,12 @@ componentDidMount() {
                 </div>
               </div><br></br> 
 
-            </div> {/*closing container*/}
-                
+            </div>)
+   
+            :
+            null
+           
+            }
 
 
         </div>   
