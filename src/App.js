@@ -29,7 +29,7 @@ class App extends Component {
 
   componentDidMount() {
     // document.getElementById("humcanvas");
-    canvas1= document.createElement("canvas");
+    // canvas1= document.createElement("canvas");
 
   }
 
@@ -167,10 +167,6 @@ class App extends Component {
 
     function gotPrediction(data) {
       var tdata1 = snapshotToArray(data);
-      // var airlabel = [];
-      // var humlabel = [];
-      // var templabel = [];
-      // var wlevlabel = [];
       var alllabel = [];
       var airvalue = [];
       var humvalue = [];
@@ -367,7 +363,9 @@ class App extends Component {
             } 
           ] 
         }, 
-        options: { 
+        options: {
+          responsive: true,
+          // maintainAspectRatio: false,
               legend: {
                 labels: {
                     fontColor: "darkgrey",
@@ -379,15 +377,22 @@ class App extends Component {
                       ticks: { 
                           // beginAtZero:true ,
                           fontColor: "	#89CFF0",
-                          // color: "red"
-                      } 
+                          
+                      } ,
+                      gridLines: {
+                        // display: false
+                      }
                   }],
                   xAxes: [{ 
                     ticks: { 
                         fontColor: "	#89CFF0",
                         beginAtZero: false,
                         // display: false 
-                    } 
+                        
+                    } ,
+                    gridLines: {
+                      // display: false
+                    }
                 }]  
               } 
           } 
@@ -422,34 +427,39 @@ class App extends Component {
             } 
           ] 
         }, 
-        options: { 
+        options: {
+          responsive: true,
+          // maintainAspectRatio: false,
           legend: {
             labels: {
                 fontColor: "darkgrey",
                 fontSize: 14
             }
           }, 
-              scales: { 
-                yAxes: [{ 
-                  color: "orange",
-
-                  ticks: { 
-                      beginAtZero:true ,
-                      fontColor: "	#89CFF0",
-                      // color: 'white'
-                      
-                      
-                  } 
-              }],
-                  xAxes: [{ 
-                    color: "orange",
-                    ticks: { 
-                        display: false, 
-                        
-
-                    } 
-                }]  
-              } 
+          
+          scales: { 
+            yAxes: [{ 
+              color: "orange",
+              ticks: { 
+                beginAtZero:true ,
+                fontColor: "	#89CFF0",                 
+              } ,
+              gridLines: {
+                display: false
+              }
+            }],
+            
+            xAxes: [{ 
+              color: "orange",
+              ticks: { 
+                display: false,        
+              },
+              gridLines: {
+                display: false
+              }
+            }]  
+            },
+               
           } 
       }
       var ctx = document.getElementById(canvas).getContext("2d");           //Created DOM reference to our tag for chart
@@ -477,180 +487,21 @@ class App extends Component {
       predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("temppredcache")), 'temppredcanvas', 'Predicted Temperature of Next 24 hours')
       predgraph(JSON.parse(localStorage.getItem("alllabelcache")), JSON.parse(localStorage.getItem("wlevpredcache")), 'wlevpredcanvas', 'Predicted Water Level of Next 24 hours')
     } 
-    // console.log(this.state.airqualityvalue);
-
-    // updateDate(tdata)
-  }
-
-  updateDate() {
-
-    var ipdate = this.input.value;
-    var ipdate1 = new Date(ipdate);
-    var rawdate = ipdate1.getFullYear() + '-' + (ipdate1.getMonth()+1) + '-' + ipdate1.getDate() 
-    ipdate = rawdate;
-    // ipdate = ipdate1;
-
-    console.log("ip date converted to ingle digti ",ipdate);
-
-    
-    function gotData(data) {
-      var mydata = [];
-      var airvalues = [];
-      var tempvalues = [];
-      var humvalues = [];
-      var wlevvalues = [];
-      var labelvalues = [];
-      // var tempdata = [];
-
-      var tdata = snapshotToArray(data);    // converted data to array of tdata
-     
-      mydata = mydatafunc(tdata, mydata);
-      // console.log(mydata);
-
-      for(var i=0; i<mydata.length; i++) {
-        airvalues.push(mydata[i]['air']);
-        tempvalues.push(mydata[i]['temp']);
-        humvalues.push(mydata[i]['hum']);
-        wlevvalues.push(mydata[i]['wlev']);
-        labelvalues.push(mydata[i]['date'])
-      }
-
-      dategraph(labelvalues, airvalues, 'aircanvas', "Air Quality on " + ipdate);
-      dategraph(labelvalues, tempvalues, 'tempcanvas', "Temperature on " + ipdate);
-      dategraph(labelvalues, humvalues, 'humcanvas', "Humidity on " + ipdate);
-      dategraph(labelvalues, wlevvalues, 'wlevcanvas', "Water Level on " + ipdate);
-
-      //end of gotdata
-    }
-
-    function gotData1(data) {
-      var mydata = [];
-      var freqvalues = [];
-      var labelvalues = [];
-      // var tempdata = [];
-
-      var tdata = snapshotToArray(data);    // converted data to array of aa
-      
-      mydata = mydatafunc(tdata, mydata);
-
-      for(var i=0; i<mydata.length; i++) {
-        labelvalues.push(mydata[i]['date']);
-        freqvalues.push(mydata[i]['val']);
-      }
-      // console.log("Temp data date aa",tempdata1[8]['date']);
-      // console.log(mydata1);
-
-      dategraph(labelvalues, freqvalues, 'freqcanvas', "Frequency on " + ipdate);
-      //end of gotdata
-    } 
-
-    function snapshotToArray(snapshot) {                                    // the snapshot is in the form id:{date: 'value', val: 'val'}
-      var returnArr = [];                                                 // we can't feed the same data to the chart, we convert the 
-      let i = 0;                                                          // snapshot into the Array with [{date, val, key}] formate
-      snapshot.forEach(function(childSnapshot) {
-          var item = childSnapshot.val();
-          item.k = i;
-          returnArr.push(item);
-          i++;
-      });
-      return returnArr;
-  }
   
-    function errData(err){
-      console.log(err);
-    }
-
-    function dategraph(labelvalues, airvalues, canvas, label) {
-      //console.log(airvalues);
-      var airgraph = {
-        type: 'line', 
-        data: { 
-          // labels: [1,2,3,4,5,6,7,8,9,0], 
-          labels: labelvalues,
-          datasets: [ 
-            { 
-                label: label, 
-                data: airvalues, 
-                fill: false,
-                borderWidth : 2,
-                backgroundColor: [
-                ],
-                pointRadius: 1,
-                pointHoverRadius: 5, //radius of point after hover
-                pointBackgroundColor: 'black', //color of dots
-                pointHoverBackgroundColor: '', //back.color of point after hover
-                pointHoverBorderColor: '	#89CFF0',//color of point border after hover
-                borderColor: 'darkgrey',//color of line            
-             
-            } 
-          ] 
-        }, 
-        options: { 
-          legend: {
-            labels: {
-                fontColor: "darkgrey",
-                fontSize: 14
-            }
-          }, 
-              scales: { 
-                yAxes: [{ 
-                  color: "orange",
-
-                  ticks: { 
-                      beginAtZero:true ,
-                      fontColor: "	#89CFF0",
-                      // color: 'white'
-                      
-                      
-                  } 
-              }],
-                  xAxes: [{ 
-                    color: "orange",
-                    ticks: { 
-                        display: false, 
-                        
-
-                    } 
-                }]  
-              } 
-          } 
-      }
-      var ctx = document.getElementById(canvas).getContext("2d");           //Created DOM reference to our tag for chart
-      // $('#datetext').text(ipdate); 
-      window.myLine = new Chart(ctx, airgraph);  
-    }
-
-    function mydatafunc(tdata, mydata) {
-      for(var i=0; i<tdata.length; i++) {             //storing data on date to array mydata
-        tdata[i]['date'] = new Date(tdata[i]['date']);
-        if(ipdate == tdata[i]['date'].getFullYear() + '-' + (tdata[i]['date'].getMonth()+1) + '-' + tdata[i]['date'].getDate()) {
-            mydata.push(tdata[i]);
-        }
-      }
-      return mydata;
-    }
-
-    var ref = firebase.database().ref('tdata');
-    ref.on('value', gotData, errData);
-
-    var ref1 = firebase.database().ref('aa');
-    ref1.on('value', gotData1, errData);
-
-  //end of upatdate
   }
-
-
 
   render() {
     return (      
         <div className="App">
           <h2>  Last Data Updated on : {this.state.datevalue}  </h2><br></br>
+          
           <h2> Enter Toilet ID: 
           <input type="text" ref={(input1) => this.input1 = input1} 
           onChange={() => this.setState({
             buttonSelected: true
           })} 
           onChange={this.handleClick.bind(this)}/></h2>
+          
           Select Date : 
           <input type="date" 
           ref={(input) => this.input = input} 
@@ -799,6 +650,7 @@ class App extends Component {
     );
 
    }
+
 }
 
 export default App;

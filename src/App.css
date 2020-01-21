@@ -9,126 +9,37 @@ body {
 	text-align: center;
   }
 
-  /* for water tank */
-  
-  #page-wrap { 
-	  width: 300px;
-	  height: 300px;
-	  /* margin: 10px;  */
-  }
-  
-  .meter { 
-	  height: 300px;  /* Can be anything */
-	  /* position: relative; */
-	  background: #555;
-	  -moz-border-radius: 25px;
-	  -webkit-border-radius: 25px;
-	  border-radius: 25px;
-	  transform: rotate(180deg);
-  }
-  
-  .meter  span {
-	  padding-top: 10px;
-	  width: 100%;
-	  display: block;
-	  border-radius: 10px 10px 0px 0px;
-	  /* -webkit-border-top-right-radius: 20px;
-	  -webkit-border-bottom-right-radius: 20px;
-	  -moz-border-radius-topright: 20px;
-	  -moz-border-radius-bottomright: 20px;
-	  border-top-right-radius: 20px;
-	  border-bottom-right-radius: 20px;
-	  -webkit-border-top-left-radius: 20px;
-	  -webkit-border-bottom-left-radius: 20px;
-	  -moz-border-radius-topleft: 20px;
-	  -moz-border-radius-bottomleft: 20px;
-	  border-top-left-radius: 20px;
-	   border-bottom-left-radius: 20px; */
-	  background-color: skyblue;
-	  position: relative;
-	  overflow: hidden;
-  }
-  
-  .container {
+.container {
 	  font-size: 26px;
-	  display: table;
-  }
-
-  .container div {
+	  /* display: table; */
+	  display: flex;
+	  flex-wrap: wrap;
+}
+.container div {
 	  padding: 5px;
 	  float: left;
-  }
-  
-  .container canvas {
+}
+
+.container canvas {
 	  padding: 10px;
-  }
-  
-  .container div .text {
+}
+
+.container div .text {
 	  padding: 5px;
 	  margin: 5px;
-  }
-
-  #airdash {
-	  width: 150px;
-	  padding: 15px;
-  }
-  #tempdash {
-	  width: 150px;
-	  padding: 15px;
-  }
-  #humdash {
-	  width: 150px;
-	  padding: 15px;
-  }
-  #watercircle {
-	  width: 150px;
-	  padding: 15px;
-  }
-  #freqdash {
-	  width: 150px;
-	  padding: 15px;
-  }
-
-  #cleanerdash {
-	  width: 150px;
-	  padding: 15px;
-  }
-
-#air{
-	box-shadow: 0 4px 8px 0 darkgray;
-	border-radius: 15px;
-  transition: 0.3s;
-  padding: 20px;
 }
 
-#hum{
-	box-shadow: 0 4px 8px 0 darkgray;
-	border-radius: 15px;
-  transition: 0.3s;
-  padding: 20px;
+#airdash, #humdash, #tempdash, #watercircle, #freqdash, #cleanerdash {
+	  width: 150px;
+	  padding: 15px;
+	
 }
 
-#temp{
-	box-shadow: 0 4px 8px 0 darkgray;
-	border-radius: 15px;
+#air, #hum, #temp, #tank, #freq {
+  box-shadow: 0 4px 8px 0 darkgray;
+  border-radius: 15px;
   transition: 0.3s;
   padding: 20px;
-}
-
-#tank{
-	box-shadow: 0 4px 8px 0 darkgray;
-	border-radius: 15px;
-  transition: 0.3s;
-  padding: 20px;
-}
-
-#freq{
-	box-shadow: 0 4px 8px 0 darkgrey;
-	border-radius: 15px;
-  transition: 0.3s;
-  padding: 20px;
-  display: flex;
-  flex-direction: row;
 }
 
 .freq-text {
@@ -157,4 +68,44 @@ body {
 	padding-top: 40px;
 	/* position: absolute;
 	left: 200px; */
+}
+
+@media screen and (max-width: 400px) { 
+	.container {
+		justify-content: center;
+	}
+
+	#air, #hum, #temp, #tank, #freq {
+		justify-content: center;
+		/* align-content: center; */
+		/* margin-left: auto; */
+		/* margin-right: auto; */
+		/* padding-left: 100px; */
+		display:flex;
+		flex-direction: column;
+		justify-content: center;
+		width: 100%;
+	}
+	
+	#airdash, #humdash, #tempdash, #watercircle, #freqdash, #cleanerdash {
+		padding-left: 100px;
+		justify-content: center;
+	}
+	
+	.graphcss {
+		padding-left: 0px;
+		margin-left: 0px;
+		/* height: 200px;
+		width: 200px; */
+	}
+
+	/* #airpredcanvas {
+		height: 200px;
+		width: 200px;
+
+	} */
+	/* .graphsize {
+		height: 200px;
+		width: 200px;
+	} */
 }
