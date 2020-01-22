@@ -74,7 +74,7 @@ body {
 .graphcss {
 	/* padding-left: auto;
 	margin-left: auto; */
-	width: 400px;
+	width:400px;
 	/* height: 350px; */
 }
 
@@ -108,13 +108,9 @@ body {
 	#cleanerdash {
 		width: auto;
 	} 
-	
-	.graphcss {
-		padding-left: 0px;
-		margin-left: 0px;
-		/* height: 200px;
-		width: 200px; */
-	}
 
+	.graphcss {
+		width: 330px;
+	}
 	
 }
