@@ -5,10 +5,13 @@ import Chart from 'chart.js';
 // import {Line} from 'react-chartjs-2';
 
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-// import ChangingProgressProvider from "ChangingProgressProvider";
 
 import 'react-circular-progressbar/dist/styles.css';
-
+// import 'bootstrap/dist/css/bootstrap.css';
+import { Progress } from 'reactstrap';
+import {Line} from 'rc-progress';
+import 'bootstrap/dist/css/bootstrap.min.css';
+// import { ProgressBar } from 'react-bootstrap'
 
 // var aa1 = [];
 var avg=0;
@@ -491,6 +494,15 @@ class App extends Component {
   }
 
   render() {
+    const mystyle = {
+      width: '90%',
+
+    };
+    const mystyle1 = {
+      width: '500px',
+      height: '50px'
+
+    };
     return (      
         <div className="App">
           <h2>  Last Data Updated on : {this.state.datevalue}  </h2><br></br>
@@ -520,7 +532,7 @@ class App extends Component {
                       styles={buildStyles({
                         rotation: 1 / 2 + 1 / 8,
                         strokeLinecap: "butt",
-                        trailColor: "white",
+                         trailColor: "#d3d3d3",
                         pathColor: `#2f4f4f`,
                         textColor: '#2f4f4f',
                         textSize: '13px'
@@ -529,7 +541,7 @@ class App extends Component {
                     <font color="#2f4f4f"><b> Air Quality </b></font>
                 </div> 
                 <div class="graphcss"> <canvas id="airpredcanvas"  /> </div>
-                <div class="graphcss"> <canvas id="aircanvas" hidden  /> </div>
+                <div class="graphcss"> <canvas id="aircanvas"    /> </div>
               </div>  <br></br>
               
               <div id="temp">  
@@ -544,7 +556,7 @@ class App extends Component {
                       styles={buildStyles({
                         rotation: 1 / 2 + 1 / 8,
                         strokeLinecap: "butt",
-                        trailColor: "white",
+                         trailColor: "#d3d3d3",
                         pathColor: `#ffae42`,
                         textColor: '#ffae42',
                         textSize: '16px'
@@ -552,7 +564,7 @@ class App extends Component {
                   /> <font color="#ffae42"><b> Temperature </b></font>
                 </div>
                 <div class="graphcss"> <canvas id="temppredcanvas" /> </div>
-                <div class="graphcss"> <canvas id="tempcanvas" hidden /> </div>
+                <div class="graphcss"> <canvas id="tempcanvas"   /> </div>
 
               </div><br></br>
 
@@ -568,7 +580,7 @@ class App extends Component {
                       styles={buildStyles({
                         rotation: 1 / 2 + 1 / 8,
                         strokeLinecap: "butt",
-                        trailColor: "white",
+                         trailColor: "#d3d3d3",
                         pathColor: `green`,
                         textColor: 'green',
                         textSize: '16px'
@@ -576,7 +588,7 @@ class App extends Component {
                     /> <font color="green"><b> Humidity </b></font>
                 </div>
                 <div class="graphcss"> <canvas id="humpredcanvas"  /> </div>
-                <div class="graphcss"> <canvas id="humcanvas"  hidden /> </div>
+                <div class="graphcss"> <canvas id="humcanvas"    /> </div>
               </div><br></br>
 
               <div id="tank">
@@ -588,7 +600,7 @@ class App extends Component {
                         styles={buildStyles({
                           rotation: 1 / 2 + 1 / 8,
                           strokeLinecap: "butt",
-                          trailColor: "white",
+                           trailColor: "#d3d3d3",
                           pathColor: `blue`,
                           textColor: 'blue',
                           textSize: '16px'
@@ -596,48 +608,54 @@ class App extends Component {
                   />  <font color="blue"><b> Water  Level </b></font>
                 </div>
                 <div class="graphcss"> <canvas id="wlevpredcanvas" /> </div>
-                <div class="graphcss"> <canvas id="wlevcanvas" hidden /> </div>
+                <div class="graphcss"> <canvas id="wlevcanvas"   /> </div>
               </div> <br></br>
 
      
               <div id="freq">
 
-                  <font class="freq-text" color="red"><b> Frequency </b></font>
-                  {this.state.cfreqvalue>5 ? <div className="freq-box-red"> {this.state.cfreqvalue} <br/> Max capacity reached</div> : <div className="freq-box-green" > {this.state.cfreqvalue} </div>}
-
+                <font class="freq-text" color="red"><b> Frequency </b></font>
+                {this.state.cfreqvalue>1 ? <div className="freq-box-red"> {this.state.cfreqvalue} <br/> Max capacity reached</div> : <div className="freq-box-green" > {this.state.cfreqvalue} <br/> </div>}
                 
                 {/* <div class="graphcss"> <canvas id="wlevpredcanvas" /> </div> */}
-                <div class="graphcss"> <canvas id="freqcanvas" hidden/> </div>
+                <div class="graphcss"> <canvas id="freqcanvas"  /> </div>
               </div>    <br></br>
                         
               <div id="cleanerquality" >
                 <div id="cleanerdash">
-                  <CircularProgressbar
-                        value={avg}
-                        maxValue={1}
-                        text={`${avg} `}
-                        circleRatio={0.75}
-                        styles={buildStyles({
-                          rotation: 1 / 2 + 1 / 8,
-                          strokeLinecap: "butt",
-                          trailColor: "white",
-                          pathColor: `#dd1f58`,
-                          textColor: '#dd1f58',
-                          textSize: '16px'
-                        })}
-                  /> <font color="#dd1f58"> <b>Cleaner's Quality</b> </font>
+                  {/* <Progress color="success" value={avg * 10} max= {10}>You did it!</Progress>    */}
+                  {avg<0.5 ?
+                  <font color="red">Not Good</font> 
+                  :
+                  <font color="green">Good</font> 
+                  } <br/>
+                  {avg<0.5  ?
+                      <Line percent={avg * 100} strokeWidth="10" trailWidth="7" strokeColor="red" width="200px" /> 
+                      :
+                      <Line percent={avg * 100} strokeWidth="10" trailWidth="7" strokeColor="green" width="200px"/>  
+                  }  <br/>
+                  {/* <Progress bar value="15" trailColor="red">Meh</Progress> */}
+                  {/* <Line percent={avg * 100} strokeWidth="10" trailWidth="7" strokeColor="red" />   */}
+                  
+                  <font color="#dd1f58"> <b>Cleaner's Quality</b> </font>
                 </div>  
-                <div><div class="graphcss"> <canvas id="wlevpredcanvas" hidden /> </div></div>
+      
+ 
               </div>
-              <br></br>
 
               <div id="wet">  
-                <div class="text">
-                  Wet Floor : {this.state.wetfloor} <br></br>
+              <div class="text">
+                  {/* Wet Floor : {this.state.wetfloor} <br></br> */}
+                  Water Clogging
                 </div>
+              {this.state.wetfloor ? <div className="freq-box-red"> {this.state.wetfloor} <br/></div> : <div className="freq-box-green" > {this.state.wetfloor} <br/> </div>}
+
+
               </div><br></br> 
 
-            </div>)
+
+        </div>
+            )
    
             :
             null
