@@ -32,6 +32,8 @@ body {
 #airdash, #humdash, #tempdash, #watercircle, #freqdash {
 	  width: 150px;
 	  padding: 15px;
+	  /* width: auto;
+	  height: auto; */
 	
 }
 
@@ -39,7 +41,7 @@ body {
 	width: auto;
 }
 
-#air, #hum, #temp, #tank, #freq, #cleanerdash, #wet {
+#air, #hum, #temp, #tank, #freq,  #wet, #cleanerquality {
   box-shadow: 0 4px 8px 0 darkgray;
   border-radius: 15px;
   transition: 0.3s;
@@ -69,12 +71,6 @@ body {
 	left: 200px; */
 }
 
-#freqflex {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
 
 
 
@@ -83,7 +79,7 @@ body {
 		justify-content: center;
 	}
 
-	#air, #hum, #temp, #tank {
+	#air, #hum, #temp, #tank , #freq, #wet, #cleanerquality{
 		justify-content: center;
 		/* align-content: center; */
 		/* margin-left: auto; */
@@ -95,10 +91,16 @@ body {
 		width: 100%;
 	}
 	
-	#airdash, #humdash, #tempdash, #watercircle, #freqdash, #cleanerdash {
-		padding-left: 100px;
+	#airdash, #humdash, #tempdash, #watercircle, #freqdash{
+		padding-left: 60px;
 		justify-content: center;
+		width: 250px;
+		height: 250px;
 	}
+
+	#cleanerdash {
+		width: auto;
+	} 
 	
 	.graphcss {
 		padding-left: 0px;
@@ -107,13 +109,5 @@ body {
 		width: 200px; */
 	}
 
-	/* #airpredcanvas {
-		height: 200px;
-		width: 200px;
-
-	} */
-	/* .graphsize {
-		height: 200px;
-		width: 200px;
-	} */
+	
 }
