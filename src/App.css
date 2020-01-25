@@ -41,7 +41,7 @@ body {
 	width: auto;
 }
 
-#air, #hum, #temp, #tank, #freq,  #wet, #cleanerquality {
+#air, #hum, #temp, #tank, #freq,  #wet, #cleanerquality, #soap {
   box-shadow: 0 4px 8px 0 darkgray;
   border-radius: 15px;
   transition: 0.3s;
@@ -50,6 +50,7 @@ body {
 
 .freq-box-red {
 	margin-left: 20px;
+	margin-top: 7%;
 	text-align: center;
 	width: auto;
 	height: auto;
@@ -86,7 +87,7 @@ body {
 		justify-content: center;
 	}
 
-	#air, #hum, #temp, #tank , #freq, #wet, #cleanerquality{
+	#air, #hum, #temp, #tank , #freq, #wet, #cleanerquality, #soap{
 		justify-content: center;
 		/* align-content: center; */
 		/* margin-left: auto; */

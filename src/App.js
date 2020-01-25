@@ -12,11 +12,21 @@ import { Progress } from 'reactstrap';
 import {Line} from 'rc-progress';
 import 'bootstrap/dist/css/bootstrap.min.css';
 // import { ProgressBar } from 'react-bootstrap'
+import Select from 'react-select';
 
 // var aa1 = [];
 var avg=0;
-// var avg1=0;
-var canvas1;
+var  tid= [];
+var toiletlist= [];
+const loc = [];
+var result= [];
+
+const options = [
+  { value: 'blues', label: 'Blues' },
+  { value: 'rock', label: 'Rock' },
+  { value: 'jazz', label: 'Jazz' },
+  { value: 'orchestra', label: 'Orchestra' } 
+];
 
 class App extends Component {
 
@@ -25,22 +35,64 @@ class App extends Component {
     this.state = {
       ipdate: '',
       tid: '',
-      buttonSelected: ''
+      buttonSelected: '',
+      value: 'select'
+      // tid: [],
+      // loc: [],
+      // result: {}
     };
   }
 
 
   componentDidMount() {
-    // document.getElementById("humcanvas");
-    // canvas1= document.createElement("canvas");
+    var reftoilet = firebase.database().ref("toilet");
+
+    console.log(tid);
+      reftoilet.on('value', snap => {
+        for(var i=0; i<snap.val().length; i++) {
+          let temp = snap.val()[i]['tid'] + "-" + snap.val()[i]['location']
+          tid.push(snap.val()[i]['tid']);
+          toiletlist.push(temp);
+          loc.push(snap.val()[i]['location']);
+        }
+        // result = Object.assign(...tid.map((k, i) => ({[k]: loc[i]})));
+
+        for (var i = 0; i < tid.length; ++i) {
+          
+          result.push({value: tid[i], label: tid[i] + '-' +loc[i]}) 
+        }
+        // ({[k]: loc[i]})
+
+        this.setState({
+          tid: tid,
+          // loc: loc,
+          // result: result,
+          // resultkeys: Object.keys(this.state.result)
+          
+        });  
+       console.log(result)
+       console.log(options)
+      });
+  
+
+    
+
+
+
 
   }
 
-  handleClick() {
+  handleClick1 = (tid) => {
+    console.log("jij");
+    this.setState({ tid });
+    console.log(`Option selected:`, tid.value);
+  }
+
+  handleClick = (tid) => {
 
     this.setState({
       buttonSelected:'1'
-    })
+    });
     navigator.serviceWorker.register('sw.js');
 
     function showNotification() {
@@ -66,8 +118,9 @@ class App extends Component {
       }
     });
     }
-
-    var tid = this.input1.value;
+    this.setState({ tid });
+    var tid = tid.value;
+    // console.log(tid)
     var ipdate = this.input.value;
     console.log(tid);
     console.log(ipdate);
@@ -505,14 +558,22 @@ class App extends Component {
     };
     return (      
         <div className="App">
-          <h2>  Last Data Updated on : {this.state.datevalue}  </h2><br></br>
-          
-          <h2> Enter Toilet ID: 
-          <input type="text" ref={(input1) => this.input1 = input1} 
+          <h2>  Last Data Updated on : {this.state.datevalue}  </h2><br></br> 
+        
+
+                    
+          <h2> Select Toilet : 
+          {/* <input type="text" ref={(input1) => this.input1 = input1} 
           onChange={() => this.setState({
             buttonSelected: true
           })} 
-          onChange={this.handleClick.bind(this)}/></h2>
+          onChange={this.handleClick.bind(this)}/> */}
+          <Select
+            autoFocus={true}
+            onChange={this.handleClick}
+            options={result}
+          />
+          </h2>
           
           Select Date : 
           <input type="date" 
@@ -648,10 +709,24 @@ class App extends Component {
                   {/* Wet Floor : {this.state.wetfloor} <br></br> */}
                   Water Clogging
                 </div>
-              {this.state.wetfloor ? <div className="freq-box-red"> {this.state.wetfloor} <br/></div> : <div className="freq-box-green" > {this.state.wetfloor} <br/> </div>}
-
+              {this.state.wetfloor ?
+               <div className="freq-box-red"> {this.state.wetfloor} <br/></div> 
+               :
+               <div className="freq-box-green" > {this.state.wetfloor} <br/> </div>}
 
               </div><br></br> 
+
+              <div id="soap">
+              <div class='text'>
+                Soap Availability
+              </div>
+              {1 ?
+               <div className="freq-box-red"> <br/> </div>
+               :
+               <div className="freq-box-green"> <br/> </div>
+              }
+              </div>
+
 
 
         </div>
