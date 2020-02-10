@@ -57,6 +57,7 @@ body {
 	background-color: red;
 	box-shadow: 0 4px 8px 0 whitesmoke;
 	padding-top: 40px;
+	color: whitesmoke;
 	/* position: absolute;
 	left: 200px; */
 }
@@ -68,6 +69,7 @@ body {
 	background-color: green;
 	box-shadow: 0 4px 8px 0 whitesmoke;
 	padding-top: 40px;
+	color: whitesmoke;
 	/* position: absolute;
 	left: 200px; */
 }
@@ -79,8 +81,20 @@ body {
 	/* height: 350px; */
 }
 
+/* for attendance table */
+.compan th{
+  width: 500px;
+      padding: 15px;
+    /* text-align: left; */
 
+  background-color: #4CAF50;
+  color: white;
+}
 
+.compan td {
+  width: 500px;
+  padding: 15px;
+}
 
 @media screen and (max-width: 400px) { 
 	.container {
@@ -115,3 +129,4 @@ body {
 	}
 	
 }
+

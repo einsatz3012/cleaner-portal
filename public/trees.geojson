@@ -1,0 +1,7 @@
+{
+"type": "FeatureCollection",
+"features": [
+{ "type": "Feature", "properties": { "id": "ak16994521", "mag": 0.5 }, "geometry": { "type": "Point", "coordinates": [73.115901, 19.2349831, 0.0 ] } },
+{ "type": "Feature", "properties": { "id": "ak16994521", "mag": 0.7 }, "geometry": { "type": "Point", "coordinates": [72.9781, 19.2183, 0.0 ] } }
+]
+}

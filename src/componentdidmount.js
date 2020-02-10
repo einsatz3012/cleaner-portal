@@ -247,3 +247,21 @@ componentDidMount() {
   
    //end of componentdidmount
   }
+
+
+
+
+
+
+
+
+
+
+
+
+//from package.json
+  // "devDependencies": {
+  //   "node-sass": "^4.13.1",
+  //   "sass-loader": "^8.0.2",
+  //   "webpack": "^4.41.5"
+  // }
