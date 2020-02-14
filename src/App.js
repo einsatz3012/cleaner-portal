@@ -2,28 +2,13 @@ import React, { Component } from 'react';
 import './App.css';
 import * as firebase from 'firebase';
 import Chart from 'chart.js';
-// import {Line} from 'react-chartjs-2';
-
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-
 import 'react-circular-progressbar/dist/styles.css';
-// import 'bootstrap/dist/css/bootstrap.css';
 import { Progress } from 'reactstrap';
 import {Line} from 'rc-progress';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Select from 'react-select';
 
-// import { ProgressBar } from 'react-bootstrap'
-
-// var aa1 = [];
 var avg=0;
-// var maxLimit1;
-// var tid=[];
-// var toiletlist=[];
-// var loc=[];
-// var avg1=0;
-// var canvas1;
-// var result=[];
 
 class App extends Component {
 
@@ -37,38 +22,7 @@ class App extends Component {
   }
 
 
-  // componentDidMount() {
-  //   var reftoilet = firebase.database().ref("toilet");
-
-  //   console.log(tid);
-  //     reftoilet.on('value', snap => {
-  //       for(var i=0; i<snap.val().length; i++) {
-  //         let temp = snap.val()[i]['tid'] + "-" + snap.val()[i]['location']
-  //         tid.push(snap.val()[i]['tid']);
-  //         toiletlist.push(temp);
-  //         loc.push(snap.val()[i]['location']);
-  //       }
-  //       // result = Object.assign(...tid.map((k, i) => ({[k]: loc[i]})));
-
-  //       for (var i = 0; i < tid.length; ++i) {          
-  //         result.push({value: tid[i], label: tid[i] + '-' +loc[i]}) 
-  //       }
-  //       // ({[k]: loc[i]})
-
-  //       this.setState({
-  //         tid: tid,
-  //         // loc: loc,
-  //         // result: result,
-  //         // resultkeys: Object.keys(this.state.result)
-          
-  //       });  
-  //      console.log(result)
-  //     //  console.log(options)
-  //     });
-  
-
-    
-
+  // componentDidMount() { 
   // }
 
   handleClick() {
@@ -116,28 +70,22 @@ class App extends Component {
         waterlevelvalue: snap.val()['wlev'],
         datevalue: snap.val()['date']
       });
-      if(this.state.airqualityvalue < 5){
-        showAirQualityNotification();
+      if(this.state.airqualityvalue > 5){
+        showAirQualityNotification1();
+        // showAirQualityNotification();
         // console.log("This is if statement less than 29");
       }
-      else{        
-        showAirQualityNotification1();
-        // console.log("This is else statemenet moret han 29");
-      }
-
-      if(this.state.wetfloor == 'Yes') {
+ 
+      if( (snap.val()['wet1'] == 1) && (snap.val()['wet2'] == 1) ) {
         showWetFloorNotification();
       } 
-      else{
-           showWetFloorNotification1();
-      }
 
-      if((((17 - this.state.waterlevelvalue)/this.state.waterlevelvalue)*100) <= 1) {
+      if((((17 - this.state.waterlevelvalue)/this.state.waterlevelvalue)*100) <= 10) {
         showWaterLevelNotification();
       } 
-      else{
-        showWaterLevelNotification1();
-      }
+      // else{
+      //   // showWaterLevelNotification1();
+      // }
 
 
       localStorage.setItem('airqualityvaluecache', this.state.airqualityvalue);
@@ -439,17 +387,17 @@ class App extends Component {
       
     }
 
-    function showAirQualityNotification() {
-      Notification.requestPermission(function(result) {
-        console.log('Notification permission status inside show notification:', result);
-        if (result === 'granted') {
-          navigator.serviceWorker.ready.then(function(registration) {
+    // function showAirQualityNotification() {
+    //   Notification.requestPermission(function(result) {
+    //     console.log('Notification permission status inside show notification:', result);
+    //     if (result === 'granted') {
+    //       navigator.serviceWorker.ready.then(function(registration) {
             
-            registration.showNotification('Air Quality is good :)');
-          });
-        }
-      });
-    }
+    //         registration.showNotification('Air Quality is good :)');
+    //       });
+    //     }
+    //   });
+    // }
       
     function showAirQualityNotification1() {
       Notification.requestPermission(function(result) {
@@ -475,17 +423,17 @@ class App extends Component {
       });
     }
       
-      function showWaterLevelNotification1() {
-      Notification.requestPermission(function(result) {
-        console.log('Notification permission status inside show notification1:', result);
-        if (result === 'granted') {
-          navigator.serviceWorker.ready.then(function(registration) {
-          registration.showNotification('There is Water :)');
+    //   function showWaterLevelNotification1() {
+    //   Notification.requestPermission(function(result) {
+    //     console.log('Notification permission status inside show notification1:', result);
+    //     if (result === 'granted') {
+    //       navigator.serviceWorker.ready.then(function(registration) {
+    //       registration.showNotification('There is Water :)');
             
-          });
-        }
-      });
-    }
+    //       });
+    //     }
+    //   });
+    // }
 
     function showWetFloorNotification() {
       Notification.requestPermission(function(result) {
@@ -493,23 +441,23 @@ class App extends Component {
         if (result === 'granted') {
           navigator.serviceWorker.ready.then(function(registration) {
             
-            registration.showNotification('There is Water Clogging :)');
+            registration.showNotification('There is Water Clogging :(');
           });
         }
       });
     }
       
-      function showWetFloorNotification1() {
-      Notification.requestPermission(function(result) {
-        console.log('Notification permission status inside show notification1:', result);
-        if (result === 'granted') {
-          navigator.serviceWorker.ready.then(function(registration) {
+    //   function showWetFloorNotification1() {
+    //   Notification.requestPermission(function(result) {
+    //     console.log('Notification permission status inside show notification1:', result);
+    //     if (result === 'granted') {
+    //       navigator.serviceWorker.ready.then(function(registration) {
             
-            registration.showNotification('There is No Water Clogging :(');
-          });
-        }
-      });
-    }
+    //         registration.showNotification('There is No Water Clogging :)');
+    //       });
+    //     }
+    //   });
+    // }
 
     function snapshotToArray(snapshot) {                                    // the snapshot is in the form id:{date: 'value', val: 'val'}
       var returnArr = [];                                                 // we can't feed the same data to the chart, we convert the 
@@ -714,7 +662,6 @@ class App extends Component {
           <input type="date" 
           ref={(input) => this.input = input} 
           onChange={this.handleClick.bind(this)}/>
-          {/* <input type="submit" value="submit" onClick={this.handleClick.bind(this)}/> */}
 
             {this.state.buttonSelected ?
               (<div class="container">
