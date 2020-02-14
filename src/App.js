@@ -81,7 +81,7 @@ class App extends Component {
       } 
 
       if((((17 - this.state.waterlevelvalue)/this.state.waterlevelvalue)*100) <= 10) {
-        showWaterLevelNotification();
+        // showWaterLevelNotification();
       } 
       // else{
       //   // showWaterLevelNotification1();
