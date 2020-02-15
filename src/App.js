@@ -70,6 +70,7 @@ class App extends Component {
         waterlevelvalue: snap.val()['wlev'],
         datevalue: snap.val()['date']
       });
+      console.log("water value : ",(((17 - this.state.waterlevelvalue)/this.state.waterlevelvalue)*100).toFixed(2))
       if(this.state.airqualityvalue > 5){
         showAirQualityNotification1();
         // showAirQualityNotification();
@@ -737,8 +738,8 @@ class App extends Component {
               <div id="tank">
                 <div id="watercircle"> 
                   <CircularProgressbar
-                        value={((17 - this.state.waterlevelvalue)/this.state.waterlevelvalue)*100}
-                        text={`${((17 - this.state.waterlevelvalue)/this.state.waterlevelvalue)*100} %`}
+                        value={(((17 - this.state.waterlevelvalue)/this.state.waterlevelvalue)*100).toFixed(2)}
+                        text={`${(((17 - this.state.waterlevelvalue)/this.state.waterlevelvalue)*100).toFixed(2)} %`}
                         circleRatio={0.75}
                         styles={buildStyles({
                           rotation: 1 / 2 + 1 / 8,
