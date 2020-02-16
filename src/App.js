@@ -70,7 +70,9 @@ class App extends Component {
         waterlevelvalue: snap.val()['wlev'],
         datevalue: snap.val()['date']
       });
-      console.log("water value : ",(((17 - this.state.waterlevelvalue)/this.state.waterlevelvalue)*100).toFixed(2))
+      console.log("hfdifk");
+      console.log("Water length: ", this.state.waterlevelvalue);
+      console.log("water value : ",(((17 - this.state.waterlevelvalue)/17)*100).toFixed(2))
       if(this.state.airqualityvalue > 5){
         showAirQualityNotification1();
         // showAirQualityNotification();
@@ -81,7 +83,7 @@ class App extends Component {
         showWetFloorNotification();
       } 
 
-      if((((17 - this.state.waterlevelvalue)/this.state.waterlevelvalue)*100) <= 10) {
+      if((((17 - this.state.waterlevelvalue)/17)*100) <= 10) {
         // showWaterLevelNotification();
       } 
       // else{
@@ -738,8 +740,8 @@ class App extends Component {
               <div id="tank">
                 <div id="watercircle"> 
                   <CircularProgressbar
-                        value={(((17 - this.state.waterlevelvalue)/this.state.waterlevelvalue)*100).toFixed(2)}
-                        text={`${(((17 - this.state.waterlevelvalue)/this.state.waterlevelvalue)*100).toFixed(2)} %`}
+                        value={(((17 - this.state.waterlevelvalue)/17)*100).toFixed(2)}
+                        text={`${(((17 - this.state.waterlevelvalue)/17)*100).toFixed(2)} %`}
                         circleRatio={0.75}
                         styles={buildStyles({
                           rotation: 1 / 2 + 1 / 8,
