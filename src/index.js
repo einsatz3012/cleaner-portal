@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import * as firebase from 'firebase';
+// import * as firebase from 'firebase';
 
 // var firebaseConfig = {
 //     apiKey: "AIzaSyDmreyiKM0KurAqflojYXtfcNym0GzPm3s",
@@ -18,18 +18,18 @@ import * as firebase from 'firebase';
 // firebase.initializeApp(firebaseConfig);
 //   firebase.analytics(); 
 
-var firebaseConfig = {
-  apiKey: "AIzaSyC3BCU_3v_kFnQp-lt60vvrU5fYlJnIm4Q",
-  authDomain: "feedback-beb57.firebaseapp.com",
-  databaseURL: "https://feedback-beb57.firebaseio.com",
-  projectId: "feedback-beb57",
-  storageBucket: "feedback-beb57.appspot.com",
-  messagingSenderId: "211570371404",
-  appId: "1:211570371404:web:f781b483e59e428bc4fde9"
+// var firebaseConfig = {
+//   apiKey: "AIzaSyC3BCU_3v_kFnQp-lt60vvrU5fYlJnIm4Q",
+//   authDomain: "feedback-beb57.firebaseapp.com",
+//   databaseURL: "https://feedback-beb57.firebaseio.com",
+//   projectId: "feedback-beb57",
+//   storageBucket: "feedback-beb57.appspot.com",
+//   messagingSenderId: "211570371404",
+//   appId: "1:211570371404:web:f781b483e59e428bc4fde9"
 
-};
-firebase.initializeApp(firebaseConfig);
-// firebase.analytics(); 
+// };
+// firebase.initializeApp(firebaseConfig);
+// // firebase.analytics(); 
 
 
 ReactDOM.render(<App />, document.getElementById('root'));
