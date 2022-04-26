@@ -5,7 +5,7 @@ import { getDatabase } from "firebase/database";
 var firebaseConfig = {
     apiKey: "AIzaSyC3BCU_3v_kFnQp-lt60vvrU5fYlJnIm4Q",
     authDomain: "feedback-beb57.firebaseapp.com",
-    databaseURL: "",
+    databaseURL: "https://feedback-beb57.firebaseio.com",
     projectId: "feedback-beb57",
     storageBucket: "feedback-beb57.appspot.com",
     messagingSenderId: "211570371404",
